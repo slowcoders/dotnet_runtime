@@ -6,3 +6,5 @@
 - Thread::ObjectRefAssign → logging: 해당 코드를 찾으면 모든 WriteBarrier 를 찾을 수 있음.
 - InlineBulkWriteBarrier → WriteBarrier for Array
 
+- write barrier generation in JIT
+    CodeGen::genGCWriteBarrier

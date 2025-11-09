@@ -38,8 +38,6 @@
             "request": "launch",
 
             "program": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug/corerun",
-            // "program": "${workspaceFolder}/artifacts/bin/testhost/net10.0-osx-Debug-arm64/shared/Microsoft.NETCore.App/10.0.0/corerun",
-
             "args": ["${workspaceRoot}/artifacts/tests/host/osx.arm64.Debug/HelloWorld/HelloWorld.dll"],
             "breakpointMode": "file",  // 참고) file 모드에서는 assembly breakpoint 가 동작하지 않는다.
             // "stopOnEntry": true,  // 참고) type 이 gdb, cppdb 인 경우엔 stopAtEntry 를 사용.
@@ -49,10 +47,9 @@
             // },            
             
             "env": {
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/artifacts/bin/coreclr-pack/Debug/net10.0/osx-arm64",
-
+                "DOTNET_ROOT": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug",
                 "CORE_ROOT": "${workspaceRoot}/artifacts/bin/coreclr-pack/Debug/net10.0/osx-arm64",
-                // "CORE_ROOT": "${workspaceRoot}/artifacts/bin/testhost/net10.0-osx-Debug-arm64/shared/Microsoft.NETCore.App/10.0.0",
+
                 "COMPlus_ZapDisable": "1", // JIT Cache 비활성화
                 "COMPlus_ReadyToRun": "0", // # R2R 비활성화
                 "COMPlus_TieredCompilation": "0",
@@ -98,6 +95,9 @@ https://github.com/dotnet/runtime/blob/main/docs/workflow/testing/coreclr/testin
 
     ## Build native libraries for tests.
     src/tests/build.sh skipmanaged /p:LibrariesConfiguration=Debug
+
+    ## 전체 Tes
+    ./build.sh -c Debug --test
 
     ## 개별 Test build
     ./dotnet.sh build -c Debug src/tests/GC/Performance/Tests/GCPerf.csproj

@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "__hash_table": "cpp",
+        "deque": "cpp",
+        "vector": "cpp",
+        "map": "cpp",
+        "memory": "cpp",
+        "unordered_map": "cpp",
+        "type_traits": "cpp",
+        "atomic": "cpp"
+    },
+    "cmake.sourceDirectory": "/Users/zeedhoon/slowcoders/kotlin/kotlin-nstw/kotlin-native/libllvmext"
+}

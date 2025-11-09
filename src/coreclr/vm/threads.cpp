@@ -1057,7 +1057,7 @@ void InitThreadManagerPerfMapData()
         GC_TRIGGERS;
     }
     CONTRACTL_END;
-#ifdef FEATURE_PERFMAP
+#if defined(FEATURE_PERFMAP) && !defined(FEATURE_PORTABLE_HELPERS) // RTGC_PATCH
     if (IsWriteBarrierCopyEnabled())
     {
         size_t writeBarrierSize = (BYTE*)JIT_PatchedCodeLast - (BYTE*)JIT_PatchedCodeStart;

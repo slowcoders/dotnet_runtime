@@ -5,7 +5,7 @@
 
 
 ## patch sources to enable debugging on macosx arm64
-### src/coreclr/hosts/corerun/CMakeList.txt:78
+### src/coreclr/hosts/corerun/CMakeLists.txt:78
 ```text
     if(CLR_CMAKE_TARGET_ARCH_ARM64)
         target_link_libraries(corerun PRIVATE
@@ -72,7 +72,7 @@ https://github.com/dotnet/runtime/blob/main/docs/workflow/debugging/coreclr/debu
 
     ./build.sh --clean
 
-    ./build.sh -rc Debug -lc Debug -arch arm64 -cmakeargs "-DFEATURE_PORTABLE_HELPERS=TRUE -DCLR_CMAKE_APPLE_DYSM=TRUE"
+    ./build.sh -rc Debug -lc Debug -arch arm64 -cmakeargs "-DFEATURE_USE_ASM_GC_WRITE_BARRIERS=FALSE -DCLR_CMAKE_APPLE_DYSM=TRUE"
     # ./build.sh -c Debug -arch arm64 -cmakeargs "-DCLR_CMAKE_APPLE_DYSM=TRUE"
     # ./build.sh -s clr.corelib+clr.nativecorelib -c Debug -arch arm64 -cmakeargs "-DCLR_CMAKE_APPLE_DYSM=TRUE"
 

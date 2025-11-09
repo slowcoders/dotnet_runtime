@@ -17,3 +17,10 @@
 * src/coreclr/vm/syncblk.h
     class ObjHeader
         - 숨겨진 객체 Header (CG, Hashcode, Lock)
+
+* build config 참조 파일
+  src/coreclr/clrdefinitions.cmake
+  src/coreclr/clr.featuredefines.props
+  -cmakeargs "-DFEATURE_USE_ASM_GC_WRITE_BARRIERS=FALSE"
+    gchelpers.cpp:1425
+    HCIMPL2_RAW(VOID, JIT_CheckedWriteBarrier 함수가 inline 처리된다.

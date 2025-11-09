@@ -70,7 +70,9 @@ https://github.com/dotnet/runtime/blob/main/docs/workflow/debugging/coreclr/debu
     # install xcode tools first. And...   
     ./eng/common/native/install-dependencies.sh
 
-    ./build.sh -rc Debug -lc Debug -arch arm64 -cmakeargs "-DCLR_CMAKE_APPLE_DYSM=TRUE"
+    ./build.sh --clean
+
+    ./build.sh -rc Debug -lc Debug -arch arm64 -cmakeargs "-DFEATURE_PORTABLE_HELPERS=TRUE -DCLR_CMAKE_APPLE_DYSM=TRUE"
     # ./build.sh -c Debug -arch arm64 -cmakeargs "-DCLR_CMAKE_APPLE_DYSM=TRUE"
     # ./build.sh -s clr.corelib+clr.nativecorelib -c Debug -arch arm64 -cmakeargs "-DCLR_CMAKE_APPLE_DYSM=TRUE"
 
@@ -97,10 +99,14 @@ https://github.com/dotnet/runtime/blob/main/docs/workflow/testing/coreclr/testin
     ## Build native libraries for tests.
     src/tests/build.sh skipmanaged /p:LibrariesConfiguration=Debug
 
-    ## 개별 Test
+    ## 개별 Test build
     ./dotnet.sh build -c Debug src/tests/GC/Performance/Tests/GCPerf.csproj
     ./dotnet.sh build -c Debug src/tests/GC/Performance/Tests/XMLReader.csproj
-    ./src/tests/build.sh /p:LibrariesConfiguration=Debug -test:GC/Performance/Tests/XMLReader.csproj
+
+    ## ativeaot test build
+    src/tests/build.sh -nativeaot Debug -tree:nativeaot /p:LibrariesConfiguration=Debug
+    # nativeaot/SmokeTests/StackTraceMetadata/BodyFoldingTes
+    # nativeaot/SmokeTests/DynamicGenerics/DynamicGenerics/DynamicGenerics.dll
 
     # # add cofig to nuget.config
     # <add key="local" value="/Users/zeedhoon/slowcoders/dotnet/dotnet_runtime/artifacts/packages/Release/Shipping" />
@@ -113,7 +119,6 @@ https://github.com/dotnet/runtime/blob/main/docs/workflow/testing/coreclr/testin
     # CORE_ROOT=/Users/zeedhoon/slowcoders/dotnet/dotnet_runtime/artifacts/tests/coreclrosx.x64.Debug/Tests/Core_Root
     # CLRCustomTestLauncher=/Users/zeedhoon/slowcoders/dotnet/dotnet_runtime/src/tests/Common/scripts/nativeaottest.sh
     # build nativeaot test
-    src/tests/build.sh -nativeaot Debug -tree:nativeaot
     # run all nativeaot test
     src/tests/run.sh runnativeaottests Debug
 

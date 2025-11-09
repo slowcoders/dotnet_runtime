@@ -8,3 +8,12 @@
 
 - write barrier generation in JIT
     CodeGen::genGCWriteBarrier
+
+- nativeaot runtime gc barrier
+    RhpAssignRef 를 통해 InlineWriteBarrier 호출!!
+    HndWriteBarrier 는 HANDLE 관리를 위한 것.
+* src/coreclr/nativeaot/Runtime/gcenv.ee.cpp 참조.
+    GCToEEInterface::StompWriteBarrier    
+* src/coreclr/vm/syncblk.h
+    class ObjHeader
+        - 숨겨진 객체 Header (CG, Hashcode, Lock)

@@ -24,3 +24,6 @@
   -cmakeargs "-DFEATURE_USE_ASM_GC_WRITE_BARRIERS=FALSE"
     gchelpers.cpp:1425
     HCIMPL2_RAW(VOID, JIT_CheckedWriteBarrier 함수가 inline 처리된다.
+
+* nativeaot debug point
+    RhpGcAlloc

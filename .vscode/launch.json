@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch lldb",
+            "type": "lldb",
+            // "type": "coreclr",
+            "request": "launch",
+
+            "program": "${workspaceFolder}/artifacts/tests/coreclr/osx.arm64.Debug/nativeaot/SmokeTests/DynamicGenerics/DynamicGenerics/native/DynamicGenerics",
+
+            // "program": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug/corerun",
+            // "args": ["${workspaceRoot}/artifacts/tests/host/osx.arm64.Debug/HelloWorld/HelloWorld.dll"],
+            "args": ["${workspaceRoot}/artifacts/tests/coreclr/osx.arm64.Debug/GC/Performance/Tests/GCPerf/GCPerf.dll"],
+                                       
+            "breakpointMode": "file",  // 참고) file 모드에서는 assembly breakpoint 가 동작하지 않는다.
+            "stopOnEntry": false,  // 참고) type 이 gdb, cppdb 인 경우엔 stopAtEntry 를 사용.
+
+            // "sourceMap": {
+            //     "/home/helixbot/runtime": "${workspaceFolder}"
+            // },            
+            
+            "env": {
+                // "DYLD_LIBRARY_PATH": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug",
+                // "DOTNET_ROOT": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug",
+                // "CLR_PATH": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug",
+
+                // "CORE_ROOT": "${workspaceRoot}/artifacts/bin/coreclr-pack/Debug/net10.0/osx-arm64",
+                "CORE_ROOT": "${workspaceRoot}/artifacts/bin/testhost/net10.0-osx-Debug-arm64/shared/Microsoft.NETCore.App/10.0.0",
+                "COMPlus_ZapDisable": "1", // JIT Cache 비활성화
+                "COMPlus_ReadyToRun": "0", // # R2R 비활성화
+                "COMPlus_TieredCompilation": "0",
+                "COMPlus_DbgEnableMiniDump": "1"
+            },
+        },
+    ]
+}

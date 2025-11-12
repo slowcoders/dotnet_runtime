@@ -217,8 +217,8 @@ FakesAssemblies/
 # C/C++ extension for Visual Studio Code
 browse.VC.db
 # Local settings folder for Visual Studio Code
-**/.vscode/**
-!**/.vscode/c_cpp_properties.json
+# **/.vscode/**
+# !**/.vscode/c_cpp_properties.json
 
 ### MonoDevelop ###
 *.userprefs
@@ -282,7 +282,7 @@ Session.vim
 .netrwhist
 
 # Visual Studio Code
-.vscode/
+## .vscode/
 
 # Codespaces
 .venv/

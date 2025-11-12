@@ -7,11 +7,11 @@
             // "type": "coreclr",
             "request": "launch",
 
-            // "program": "${workspaceFolder}/artifacts/tests/coreclr/osx.arm64.Debug/nativeaot/SmokeTests/DynamicGenerics/DynamicGenerics/native/DynamicGenerics",
+            "program": "${workspaceFolder}/artifacts/tests/coreclr/osx.arm64.Debug/nativeaot/SmokeTests/DynamicGenerics/DynamicGenerics/native/DynamicGenerics",
 
-            "program": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug/corerun",
-            "args": ["${workspaceRoot}/artifacts/tests/host/osx.arm64.Debug/HelloWorld/HelloWorld.dll"],
-            // "args": ["${workspaceRoot}/artifacts/tests/coreclr/osx.arm64.Debug/GC/Performance/Tests/GCPerf/GCPerf.dll"],
+            // "program": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug/corerun",
+            // "args": ["${workspaceRoot}/artifacts/tests/host/osx.arm64.Debug/HelloWorld/HelloWorld.dll"],
+            "args": ["${workspaceRoot}/artifacts/tests/coreclr/osx.arm64.Debug/GC/Performance/Tests/GCPerf/GCPerf.dll"],
                                        
             "breakpointMode": "file",  // 참고) file 모드에서는 assembly breakpoint 가 동작하지 않는다.
             "stopOnEntry": false,  // 참고) type 이 gdb, cppdb 인 경우엔 stopAtEntry 를 사용.

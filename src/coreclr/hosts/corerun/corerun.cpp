@@ -404,6 +404,13 @@ static int run(const configuration& config)
     }
 
     // Get CoreCLR exports
+#if 1
+    // static link to coreclr(for debugging)
+    coreclr_initialize_ptr coreclr_init_func = coreclr_initialize;
+    coreclr_execute_assembly_ptr coreclr_execute_func = coreclr_execute_assembly;
+    coreclr_set_error_writer_ptr coreclr_set_error_writer_func = coreclr_set_error_writer;
+    coreclr_shutdown_2_ptr coreclr_shutdown2_func = coreclr_shutdown_2;
+#else
     coreclr_initialize_ptr coreclr_init_func = nullptr;
     coreclr_execute_assembly_ptr coreclr_execute_func = nullptr;
     coreclr_set_error_writer_ptr coreclr_set_error_writer_func = nullptr;
@@ -417,6 +424,7 @@ static int run(const configuration& config)
 
     // The coreclr_set_error_writer is optional
     (void)try_get_export(coreclr_mod, "coreclr_set_error_writer", (void**)&coreclr_set_error_writer_func);
+#endif
 
     // Construct CoreCLR properties.
     pal::string_utf8_t tpa_list_utf8 = pal::convert_to_utf8(tpa_list.c_str());

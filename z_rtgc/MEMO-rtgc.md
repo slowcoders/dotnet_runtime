@@ -25,5 +25,16 @@
     gchelpers.cpp:1425
     HCIMPL2_RAW(VOID, JIT_CheckedWriteBarrier 함수가 inline 처리된다.
 
+* 주요 debug-pointer
+    BYTE* GetWriteBarrierCodeLocation
+    WriteBarrierManager::Initialize()
+    void RunMainInternal
+    void CallDescrWorkerWithHandler
+    RhpNewObject(AllocFast.s)
+        -> RhpGcAlloc(gcelpers.cppp)
+            -> GCHeap::Alloc(gc_alloc_context*   (gc.cppp)
+    RhpAssignRef
+        -> RhpAssignRefArm64
+
 * nativeaot debug point
-    RhpGcAlloc
+    RhpGcAlloc --> nativeaot 전용 runtime 이다.

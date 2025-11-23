@@ -69,3 +69,19 @@ FCIMPL3(void, RhBulkMoveWithWriteBarrier, uint8_t* pDest, uint8_t* pSrc, size_t 
     }
 }
 FCIMPLEND
+
+// --- RTGC brrriers ---
+
+FCDECL2(void, RhpAssignRef, Object **dst, Object *ref);
+
+volatile bool call_rhp_assign_ref = true;
+// EXTERN_C void F_CALL_CONV 
+FCIMPL2(void, RhpAssignRef_rtgc, Object **dst, Object *ref)
+{
+    if (call_rhp_assign_ref) {
+        RhpAssignRef(dst, ref);
+    } else {
+        PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
+    }
+}
+FCIMPLEND

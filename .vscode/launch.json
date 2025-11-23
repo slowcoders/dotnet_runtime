@@ -8,8 +8,9 @@
             "request": "launch",
 
             // "program": "${workspaceFolder}/artifacts/tests/coreclr/osx.arm64.Debug/nativeaot/SmokeTests/DynamicGenerics/DynamicGenerics/native/DynamicGenerics",
+            "program": "${workspaceFolder}/artifacts/tests/coreclr/osx.arm64.Debug/nativeaot/SmokeTests/UnitTests/UnitTests/native/UnitTests",
 
-            "program": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug/corerun",
+            // "program": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug/corerun",
             // "args": ["${workspaceRoot}/artifacts/tests/host/osx.arm64.Debug/HelloWorld/HelloWorld.dll"],
             "args": ["${workspaceRoot}/artifacts/tests/coreclr/osx.arm64.Debug/GC/Performance/Tests/GCPerf/GCPerf.dll"],
                                        

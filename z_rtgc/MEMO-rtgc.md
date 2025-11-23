@@ -35,6 +35,12 @@
             -> GCHeap::Alloc(gc_alloc_context*   (gc.cppp)
     RhpAssignRef
         -> RhpAssignRefArm64
+    src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/JitHelper.cs
+        TargetArchitecture.ARM64 => "RhpAssignRefArm64",
 
 * nativeaot debug point
     RhpGcAlloc --> nativeaot 전용 runtime 이다.
+    InternalCalls.RhpAssignRef --> Rhp call wrapper
+    src/coreclr/nativeaot/Runtime.Base/src/System/Runtime/InternalCalls.cs
+        [RuntimeImport(RuntimeLibrary, "RhpAssignRef")]
+    src/coreclr/nativeaot/Runtime/GCHelpers.cpp

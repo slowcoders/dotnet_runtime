@@ -67,10 +67,14 @@ https://github.com/dotnet/runtime/blob/main/docs/workflow/debugging/coreclr/debu
     # install xcode tools first. And...   
     ./eng/common/native/install-dependencies.sh
 
+    # dlopen(libjitinterface_arm64) 오류 발생 시 clean 실행 필요!!
     ./build.sh --clean
 
+    rm -rf artifacts/obj/coreclr/osx.arm64.Debug/jit
     ./build.sh -rc Debug -lc Debug -arch arm64 -cmakeargs "-DFEATURE_USE_ASM_GC_WRITE_BARRIERS=FALSE -DCLR_CMAKE_APPLE_DYSM=TRUE"
-    # ./build.sh clr+libs+tools -rc Debug -lc Debug -arch arm64 -cmakeargs "-DFEATURE_USE_ASM_GC_WRITE_BARRIERS=FALSE -DCLR_CMAKE_APPLE_DYSM=TRUE"
+    # cp ./artifacts/bin/coreclr/osx.arm64.Debug/ilc/libjitinterface_arm64.dylib ./artifacts/bin/coreclr/osx.arm64.Debug/arm64/ilc/
+=
+    # ./build.sh clr.aot -rc Debug -lc Debug -arch arm64 -cmakeargs "-DFEATURE_USE_ASM_GC_WRITE_BARRIERS=FALSE -DCLR_CMAKE_APPLE_DYSM=TRUE"
 
     # ~/.zprofile  -- set debugger runtime.  
     export DOTNET_ROOT=${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug
@@ -88,15 +92,14 @@ https://github.com/dotnet/runtime/blob/main/docs/workflow/debugging/coreclr/debu
     # ./build.sh clr.aot+libs -rc Debug -lc Debug -cmakeargs "-DFEATURE_USE_ASM_GC_WRITE_BARRIERS=FALSE -DCLR_CMAKE_APPLE_DYSM=TRUE"
 ```
 
+### LLBD plugin 설정
+Lldb > Launch Init: Commands [Add Item]
+    pro hand -p true -s false SIGUSR1
+    pro hand -p true -s false SIGSEGV
+
 ### test 
 https://github.com/dotnet/runtime/blob/main/docs/workflow/testing/coreclr/testing.md
 ```sh    
-
-    ## Build Core_Root for tests => artifacts/tests/coreclr/osx.arm64.Debug/Tests/Core_Root/**
-    src/tests/build.sh generatelayoutonly /p:LibrariesConfiguration=Debug
-
-    ## Build native libraries for tests.
-    src/tests/build.sh skipmanaged /p:LibrariesConfiguration=Debug
 
     ## nativeaot test build
     src/tests/build.sh -nativeaot Debug -tree:nativeaot /p:LibrariesConfiguration=Debug
@@ -104,6 +107,10 @@ https://github.com/dotnet/runtime/blob/main/docs/workflow/testing/coreclr/testin
     src/tests/run.sh --runnativeaottests Debug
 
 
+    ## Build Core_Root for tests => artifacts/tests/coreclr/osx.arm64.Debug/Tests/Core_Root/**
+    src/tests/build.sh generatelayoutonly /p:LibrariesConfiguration=Debug
+    ## Build native libraries for tests.
+    src/tests/build.sh skipmanaged /p:LibrariesConfiguration=Debug
     ## 전체 coreclr Test 실행
     ./build.sh -c Debug --test
 
@@ -115,3 +122,4 @@ https://github.com/dotnet/runtime/blob/main/docs/workflow/testing/coreclr/testin
 ###
 
 
+./artifacts/obj/coreclr/osx.arm64.Debug/jit/CMakeFiles/clrjit_universal_arm64_arm64.dir

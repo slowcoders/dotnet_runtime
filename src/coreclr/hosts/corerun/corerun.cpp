@@ -404,7 +404,7 @@ static int run(const configuration& config)
     }
 
     // Get CoreCLR exports
-#if 1
+#if 1 // _rtgc
     // static link to coreclr(for debugging)
     coreclr_initialize_ptr coreclr_init_func = coreclr_initialize;
     coreclr_execute_assembly_ptr coreclr_execute_func = coreclr_execute_assembly;

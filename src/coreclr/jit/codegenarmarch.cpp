@@ -4003,6 +4003,7 @@ void CodeGen::genCodeForStoreBlk(GenTreeBlk* blkOp)
     {
         case GenTreeBlk::BlkOpKindCpObjUnroll:
             assert(!blkOp->gtBlkOpGcUnsafe);
+            // _rtgc call Object copy
             genCodeForCpObj(blkOp->AsBlk());
             break;
 

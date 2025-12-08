@@ -2624,7 +2624,7 @@ void CodeGen::genGCWriteBarrier(GenTreeStoreInd* store, GCInfo::WriteBarrierForm
         return;
     }
 #endif // FEATURE_COUNT_GC_WRITE_BARRIERS
-
+    // _rtgc
     genEmitHelperCall(helper,
                       0,           // argSize
                       EA_PTRSIZE); // retSize

@@ -38,9 +38,51 @@
     src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/JitHelper.cs
         TargetArchitecture.ARM64 => "RhpAssignRefArm64",
 
+    src/coreclr/nativeaot/Runtime/GCMemoryHelpers.inl
+        void InlineWriteBarrier
+        void InlineCheckedWriteBarrier -> heap 내부 check. (stack object 처리??)
+
 * nativeaot debug point
     RhpGcAlloc --> nativeaot 전용 runtime 이다.
     InternalCalls.RhpAssignRef --> Rhp call wrapper
     src/coreclr/nativeaot/Runtime.Base/src/System/Runtime/InternalCalls.cs
         [RuntimeImport(RuntimeLibrary, "RhpAssignRef")]
     src/coreclr/nativeaot/Runtime/GCHelpers.cpp
+
+* InWriteBarrierHelper 의 용도와 의미.
+   1) WriteBarrier 사용 시 location 에 대한 null check 를 생락한다.
+   2) WriteBarrier 내에서 발생한 npe 는 무시한다?
+   
+* LoadBarrier 구현??
+    src/coreclr/tools/Common/TypeSystem/IL/Stubs/UnsafeIntrinsics.cs
+        MethodIL EmitReadWrite
+            codeStream.Emit(write ? ILOpcode.stobj : ILOpcode.ldobj,
+
+* RhpAssignRef or WriteBarrier
+    JIT_WriteBarrier(Object **dst, Object *ref)
+
+    src/coreclr/tools/aot/ILCompiler.Compiler/Compiler/JitHelper.cs
+        case ReadyToRunHelper.WriteBarrier:
+            ->  RhpAssignRefArm64 호출. (주의. x0, x1 사용 안함!!)
+
+    src/coreclr/System.Private.CoreLib/src/System/Runtime/CompilerServices/CastHelpers.cs
+        void WriteBarrier 
+
+    src/coreclr/tools/aot/ILCompiler.ReadyToRun/JitInterface/CorInfoImpl.ReadyToRun.cs
+                case CorInfoHelpFunc.CORINFO_HELP_ASSIGN_REF:
+                    id = ReadyToRunHelper.WriteBarrier; --> 이 코드를 Volatile 로 변경할 수 있다???
+
+    src/coreclr/tools/aot/ILCompiler.RyuJit/JitInterface/CorInfoImpl.RyuJit.cs
+                case CorInfoHelpFunc.CORINFO_HELP_ASSIGN_REF:
+                    id = ReadyToRunHelper.WriteBarrier;
+
+    src/coreclr/tools/Common/Internal/Runtime/ReadyToRunConstants.cs
+        // Write barriers
+        WriteBarrier                = 0x30,
+        CheckedWriteBarrier         = 0x31,
+        ByRefWriteBarrier           = 0x32,
+        BulkWriteBarrier            = 0x33,
+
+        // Array helpers
+        Stelem_Ref                  = 0x38,
+        Ldelema_Ref                 = 0x39,

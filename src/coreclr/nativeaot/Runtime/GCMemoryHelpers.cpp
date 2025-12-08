@@ -73,15 +73,47 @@ FCIMPLEND
 // --- RTGC brrriers ---
 
 FCDECL2(void, RhpAssignRef, Object **dst, Object *ref);
+FCDECL2(void, RhpCheckedAssignRef_rtgc_s, Object **dst, Object *ref);
+FCDECL2(void, RhpByRefAssignRefArm64, Object **dst, Object *ref);
 
 volatile bool call_rhp_assign_ref = true;
+int cnt = 0;
 // EXTERN_C void F_CALL_CONV 
-FCIMPL2(void, RhpAssignRef_rtgc, Object **dst, Object *ref)
+FCIMPL3(void, RhpAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
     if (call_rhp_assign_ref) {
-        RhpAssignRef(dst, ref);
+        InlineWriteBarrier(dst, ref);
     } else {
         PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
     }
 }
 FCIMPLEND
+
+// EXTERN_C void F_CALL_CONV 
+FCIMPL3(void, RhpCheckedAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
+{
+    if (call_rhp_assign_ref) {
+        InlineCheckedWriteBarrier(dst, ref);
+        // RhpCheckedAssignRef_rtgc_s(dst, ref);
+    } else {
+        PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
+    }
+}
+FCIMPLEND
+
+// EXTERN_C void F_CALL_CONV 
+FCIMPL3(void, RhpByRefAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
+{
+    if (call_rhp_assign_ref) {
+        GCToOSInterface::DebugBreak();
+        RhpByRefAssignRefArm64(dst, ref);
+    } else {
+        PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
+    }
+}
+FCIMPLEND
+
+extern "C" void _rtgc_debug_trap()
+{
+    GCToOSInterface::DebugBreak();
+}

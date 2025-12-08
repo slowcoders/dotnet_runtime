@@ -121,10 +121,18 @@ namespace System.Runtime
         internal static extern unsafe object RhpNewFastMisalign(MethodTable * pEEType);
 #endif // FEATURE_64BIT_ALIGNMENT
 
-        [RuntimeImport(RuntimeLibrary, "RhpAssignRef_rtgc")]
-        // [RuntimeImport(RuntimeLibrary, "RhpAssignRef")]
+        [RuntimeImport(RuntimeLibrary, "RhpAssignRef")]
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern unsafe void RhpAssignRef(ref object? address, object? obj);
+
+        [RuntimeImport(RuntimeLibrary, "RhpAssignRefArm64_rtgc")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern unsafe void RhpAssignRefArm64_rtgc(ref object? address, object? obj, object owner);
+
+        [RuntimeImport(RuntimeLibrary, "RhpCheckedAssignRefArm64_rtgc")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern unsafe void RhpCheckedAssignRefArm64_rtgc(ref object? address, object? obj, object owner);
+
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         [RuntimeImport(RuntimeLibrary, "RhpGcSafeZeroMemory")]

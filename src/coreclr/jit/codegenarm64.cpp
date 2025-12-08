@@ -3589,6 +3589,7 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
 
     // Consume the operands and get them into the right registers.
     // They may now contain gc pointers (depending on their type; gcMarkRegPtrVal will "do the right thing").
+    // _rtgc
     genConsumeBlockOp(cpObjNode, REG_WRITE_BARRIER_DST_BYREF, REG_WRITE_BARRIER_SRC_BYREF, REG_NA);
     gcInfo.gcMarkRegPtrVal(REG_WRITE_BARRIER_SRC_BYREF, srcAddrType);
     gcInfo.gcMarkRegPtrVal(REG_WRITE_BARRIER_DST_BYREF, dstAddr->TypeGet());
@@ -3711,6 +3712,7 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
             }
             else
             {
+                // _rtgc
                 // In the case of a GC-Pointer we'll call the ByRef write barrier helper
                 genEmitHelperCall(CORINFO_HELP_ASSIGN_BYREF, 0, EA_PTRSIZE);
                 gcPtrCount--;
@@ -4239,12 +4241,20 @@ void CodeGen::genCodeForStoreInd(GenTreeStoreInd* tree)
         //  as that is where 'addr' must go.
         noway_assert(data->GetRegNum() != REG_WRITE_BARRIER_DST);
 
-        // 'addr' goes into x14 (REG_WRITE_BARRIER_DST)
-        genCopyRegIfNeeded(addr, REG_WRITE_BARRIER_DST);
+        const bool _rtgc = true;
+        if (_rtgc) {
+            // 'addr' goes into x14 (REG_WRITE_BARRIER_DST)
+            genCopyRegIfNeeded(addr, REG_ARG_0);
 
-        // 'data' goes into x15 (REG_WRITE_BARRIER_SRC)
-        genCopyRegIfNeeded(data, REG_WRITE_BARRIER_SRC);
+            // 'data' goes into x15 (REG_WRITE_BARRIER_SRC)
+            genCopyRegIfNeeded(data, REG_ARG_1);
+        } else {
+            // 'addr' goes into x14 (REG_WRITE_BARRIER_DST)
+            genCopyRegIfNeeded(addr, REG_WRITE_BARRIER_DST);
 
+            // 'data' goes into x15 (REG_WRITE_BARRIER_SRC)
+            genCopyRegIfNeeded(data, REG_WRITE_BARRIER_SRC);
+        }
         genGCWriteBarrier(tree, writeBarrierForm);
     }
     else // A normal store, not a WriteBarrier store

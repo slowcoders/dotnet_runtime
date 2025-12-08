@@ -2019,3 +2019,9 @@ static void CheckOffsetOfFieldInInstantiation(MethodTable *pMTOfInstantiation, F
 #endif
 
 #endif // DACCESS_COMPILE
+
+
+extern "C" void _rtgc_debug_trap()
+{
+    throw "DebugBreak";
+}

@@ -37,6 +37,8 @@ namespace System.Runtime
 
         private static CastCache s_castCache = new CastCache(InitialCacheSize, MaximumCacheSize);
 
+        private static bool ENABLE_rtgc = true;
+
         [Flags]
         internal enum AssignmentVariation
         {
@@ -803,7 +805,10 @@ namespace System.Runtime
                 goto notExactMatch;
 
         doWrite:
-            InternalCalls.RhpAssignRef(ref element, obj);
+            if (ENABLE_rtgc)
+                InternalCalls.RhpAssignRefArm64_rtgc(ref element, obj, array);
+            else
+                InternalCalls.RhpAssignRef(ref element, obj);
             return;
 
         assigningNull:
@@ -817,23 +822,31 @@ namespace System.Runtime
                 goto doWrite;
 #endif
 
-            StelemRef_Helper(ref element, elementType, obj);
+            StelemRef_Helper(ref element, elementType, obj, array);
         }
 
+
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static unsafe void StelemRef_Helper(ref object? element, MethodTable* elementType, object obj)
+        private static unsafe void StelemRef_Helper(ref object? element, MethodTable* elementType, object obj, object?[] array_rtgc)
         {
             CastResult result = s_castCache.TryGet((nuint)obj.GetMethodTable() + (int)AssignmentVariation.BoxedSource, (nuint)elementType);
             if (result == CastResult.CanCast)
             {
-                InternalCalls.RhpAssignRef(ref element, obj);
+                if (ENABLE_rtgc)
+                {
+                    InternalCalls.RhpAssignRefArm64_rtgc(ref element, obj, array_rtgc);
+                }
+                else
+                {
+                    InternalCalls.RhpAssignRef(ref element, obj);
+                }
                 return;
             }
 
-            StelemRef_Helper_NoCacheLookup(ref element, elementType, obj);
+            StelemRef_Helper_NoCacheLookup(ref element, elementType, obj, array_rtgc);
         }
 
-        private static unsafe void StelemRef_Helper_NoCacheLookup(ref object? element, MethodTable* elementType, object obj)
+        private static unsafe void StelemRef_Helper_NoCacheLookup(ref object? element, MethodTable* elementType, object obj, object?[] array_rtgc)
         {
             object? castedObj = IsInstanceOfAny_NoCacheLookup(elementType, obj);
             if (castedObj == null)
@@ -843,7 +856,10 @@ namespace System.Runtime
                 throw elementType->GetClasslibException(ExceptionIDs.ArrayTypeMismatch);
             }
 
-            InternalCalls.RhpAssignRef(ref element, obj);
+            if (ENABLE_rtgc)
+                InternalCalls.RhpAssignRefArm64_rtgc(ref element, obj, array_rtgc);
+            else
+                InternalCalls.RhpAssignRef(ref element, obj);
         }
 
         private static unsafe object IsInstanceOfArray(MethodTable* pTargetType, object obj)

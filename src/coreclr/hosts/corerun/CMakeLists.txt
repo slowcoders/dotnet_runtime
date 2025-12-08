@@ -106,14 +106,14 @@ else()
         endif()
     endif()
     # _rtgc
-    if(CLR_CMAKE_TARGET_ARCH_ARM64)
-        target_link_libraries(corerun PRIVATE
-        coreclr_static
-        gcinfo
-        System.IO.Compression.Native-Static
-        System.Globalization.Native-Static
-        System.Native-Static)
-    endif()
+    # if(CLR_CMAKE_TARGET_ARCH_ARM64)
+    #     target_link_libraries(corerun PRIVATE
+    #     coreclr_static
+    #     gcinfo
+    #     System.IO.Compression.Native-Static
+    #     System.Globalization.Native-Static
+    #     System.Native-Static)
+    # endif()
 endif(CLR_CMAKE_HOST_WIN32)
 
 if (CLR_CMAKE_HOST_APPLE)

@@ -212,6 +212,14 @@ LEAF_ENTRY RhpByRefAssignRefArm64, _TEXT
 
 LEAF_END RhpByRefAssignRefArm64, _TEXT
 
+LEAF_ENTRY RhpCheckedAssignRef_rtgc_s, _TEXT
+        mov     x14, x0                     ; x14 = dst
+        mov     x15, x1                     ; x15 = val
+        b       C_FUNC(RhpCheckedAssignRefArm64)
+
+LEAF_END RhpCheckedAssignRef_rtgc_s, _TEXT
+
+
 // JIT_CheckedWriteBarrier(Object** dst, Object* src)
 //
 // Write barrier for writes to objects that may reside
@@ -266,6 +274,8 @@ LEAF_ENTRY RhpAssignRefArm64, _TEXT
 
     ALTERNATE_ENTRY RhpAssignRefAVLocation
         stlr    x15, [x14]
+
+        b       C_FUNC(_rtgc_debug_trap)
 
         INSERT_UNCHECKED_WRITE_BARRIER_CORE x14, x15
 

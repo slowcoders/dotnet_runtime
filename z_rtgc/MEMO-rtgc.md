@@ -1,10 +1,9 @@
 ### Hints
-- INT_STIND_O
 - SetObjectReferenceUnchecked
 - ErectWriteBarrier → gchelpers.cpp : 기본 WriteBarrier. 실제 사용 시엔 Assembly??<br>
 현재는 RememberedSet Card 관리 기능만 있음.
 - Thread::ObjectRefAssign → logging: 해당 코드를 찾으면 모든 WriteBarrier 를 찾을 수 있음.
-- InlineBulkWriteBarrier → WriteBarrier for Array
+- RhBulkMoveWithWriteBarrier -> InlinedBulkWriteBarrier → WriteBarrier for Array
 
 - write barrier generation in JIT
     CodeGen::genGCWriteBarrier
@@ -86,3 +85,8 @@
         // Array helpers
         Stelem_Ref                  = 0x38,
         Ldelema_Ref                 = 0x39,
+
+
+CObjectHeader::void SetMarked()
+mark_object_simple1.cpp
+    go_through_object 를 통해 ref field interation??

@@ -82,6 +82,7 @@ int cnt = 0;
 FCIMPL3(void, RhpAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
     if (call_rhp_assign_ref) {
+        *dst = ref;
         InlineWriteBarrier(dst, ref);
     } else {
         PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
@@ -93,6 +94,7 @@ FCIMPLEND
 FCIMPL3(void, RhpCheckedAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
     if (call_rhp_assign_ref) {
+        *dst = ref;
         InlineCheckedWriteBarrier(dst, ref);
         // RhpCheckedAssignRef_rtgc_s(dst, ref);
     } else {

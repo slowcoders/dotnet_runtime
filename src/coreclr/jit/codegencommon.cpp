@@ -704,6 +704,7 @@ void CodeGenInterface::genUpdateRegLife(const LclVarDsc* varDsc, bool isBorn, bo
 //
 regMaskTP Compiler::compHelperCallKillSet(CorInfoHelpFunc helper)
 {
+    const bool _rtgc = true;
     switch (helper)
     {
         // Most of the helpers are written in C++ and C# and we can't make
@@ -714,10 +715,10 @@ regMaskTP Compiler::compHelperCallKillSet(CorInfoHelpFunc helper)
         //
         case CORINFO_HELP_ASSIGN_REF:
         case CORINFO_HELP_CHECKED_ASSIGN_REF:
-            return RBM_CALLEE_TRASH_WRITEBARRIER;
+            return _rtgc ? RBM_CALLEE_TRASH : RBM_CALLEE_TRASH_WRITEBARRIER;
 
         case CORINFO_HELP_ASSIGN_BYREF:
-            return RBM_CALLEE_TRASH_WRITEBARRIER_BYREF;
+            return _rtgc ? RBM_CALLEE_TRASH : RBM_CALLEE_TRASH_WRITEBARRIER_BYREF;
 
         case CORINFO_HELP_PROF_FCN_ENTER:
             return RBM_PROFILER_ENTER_TRASH;

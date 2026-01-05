@@ -3587,12 +3587,21 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
     assert(cpObjNode->GetLayout()->HasGCPtr());
 #endif // DEBUG
 
+    const bool _rtgc = !dstOnStack && cpObjNode->GetLayout()->GetGCPtrCount() > 0;
+    if (_rtgc) {
+        // genEmitHelperCall(CORINFO_HELP_ASSIGN_BYREF, 0, EA_PTRSIZE);
+        // gcInfo.gcMarkRegSetNpt(RBM_CALLEE_TRASH);
+        // return;
+    }
+
     // Consume the operands and get them into the right registers.
     // They may now contain gc pointers (depending on their type; gcMarkRegPtrVal will "do the right thing").
     // _rtgc
-    genConsumeBlockOp(cpObjNode, REG_WRITE_BARRIER_DST_BYREF, REG_WRITE_BARRIER_SRC_BYREF, REG_NA);
-    gcInfo.gcMarkRegPtrVal(REG_WRITE_BARRIER_SRC_BYREF, srcAddrType);
-    gcInfo.gcMarkRegPtrVal(REG_WRITE_BARRIER_DST_BYREF, dstAddr->TypeGet());
+    regNumber DST_BYREF = REG_WRITE_BARRIER_DST_BYREF;
+    regNumber SRC_BYREF = REG_WRITE_BARRIER_SRC_BYREF;
+    genConsumeBlockOp(cpObjNode, DST_BYREF, SRC_BYREF, REG_NA);
+    gcInfo.gcMarkRegPtrVal(SRC_BYREF, srcAddrType);
+    gcInfo.gcMarkRegPtrVal(DST_BYREF, dstAddr->TypeGet());
 
     ClassLayout* layout = cpObjNode->GetLayout();
     unsigned     slots  = layout->GetSlotCount();
@@ -3602,16 +3611,16 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
     regNumber tmpReg2 = REG_NA;
 
     assert(genIsValidIntReg(tmpReg));
-    assert(tmpReg != REG_WRITE_BARRIER_SRC_BYREF);
-    assert(tmpReg != REG_WRITE_BARRIER_DST_BYREF);
+    assert(tmpReg != SRC_BYREF);
+    assert(tmpReg != DST_BYREF);
 
     if (slots > 1)
     {
         tmpReg2 = internalRegisters.Extract(cpObjNode, RBM_ALLINT);
         assert(tmpReg2 != tmpReg);
         assert(genIsValidIntReg(tmpReg2));
-        assert(tmpReg2 != REG_WRITE_BARRIER_DST_BYREF);
-        assert(tmpReg2 != REG_WRITE_BARRIER_SRC_BYREF);
+        assert(tmpReg2 != DST_BYREF);
+        assert(tmpReg2 != SRC_BYREF);
     }
 
     if (cpObjNode->IsVolatile())
@@ -3632,9 +3641,9 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
             emitAttr attr0 = emitTypeSize(layout->GetGCPtrType(i + 0));
             emitAttr attr1 = emitTypeSize(layout->GetGCPtrType(i + 1));
 
-            emit->emitIns_R_R_R_I(INS_ldp, attr0, tmpReg, tmpReg2, REG_WRITE_BARRIER_SRC_BYREF, 2 * TARGET_POINTER_SIZE,
+            emit->emitIns_R_R_R_I(INS_ldp, attr0, tmpReg, tmpReg2, SRC_BYREF, 2 * TARGET_POINTER_SIZE,
                                   INS_OPTS_POST_INDEX, attr1);
-            emit->emitIns_R_R_R_I(INS_stp, attr0, tmpReg, tmpReg2, REG_WRITE_BARRIER_DST_BYREF, 2 * TARGET_POINTER_SIZE,
+            emit->emitIns_R_R_R_I(INS_stp, attr0, tmpReg, tmpReg2, DST_BYREF, 2 * TARGET_POINTER_SIZE,
                                   INS_OPTS_POST_INDEX, attr1);
             i += 2;
         }
@@ -3644,9 +3653,9 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
         {
             emitAttr attr0 = emitTypeSize(layout->GetGCPtrType(i + 0));
 
-            emit->emitIns_R_R_I(INS_ldr, attr0, tmpReg, REG_WRITE_BARRIER_SRC_BYREF, TARGET_POINTER_SIZE,
+            emit->emitIns_R_R_I(INS_ldr, attr0, tmpReg, SRC_BYREF, TARGET_POINTER_SIZE,
                                 INS_OPTS_POST_INDEX);
-            emit->emitIns_R_R_I(INS_str, attr0, tmpReg, REG_WRITE_BARRIER_DST_BYREF, TARGET_POINTER_SIZE,
+            emit->emitIns_R_R_I(INS_str, attr0, tmpReg, DST_BYREF, TARGET_POINTER_SIZE,
                                 INS_OPTS_POST_INDEX);
         }
     }
@@ -3677,8 +3686,8 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
                     i++;
                 } while ((i < slots) && !layout->IsGCPtr(i));
 
-                const regNumber srcReg = REG_WRITE_BARRIER_SRC_BYREF;
-                const regNumber dstReg = REG_WRITE_BARRIER_DST_BYREF;
+                const regNumber srcReg = SRC_BYREF;
+                const regNumber dstReg = DST_BYREF;
                 while (nonGcSlots > 0)
                 {
                     regNumber tmp1 = tmpReg;
@@ -3728,7 +3737,7 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
         instGen_MemoryBarrier(BARRIER_LOAD_ONLY);
     }
 
-    // Clear the gcInfo for REG_WRITE_BARRIER_SRC_BYREF and REG_WRITE_BARRIER_DST_BYREF.
+    // Clear the gcInfo for SRC_BYREF and DST_BYREF.
     // While we normally update GC info prior to the last instruction that uses them,
     // these actually live into the helper call.
     gcInfo.gcMarkRegSetNpt(RBM_WRITE_BARRIER_SRC_BYREF | RBM_WRITE_BARRIER_DST_BYREF);
@@ -4243,10 +4252,10 @@ void CodeGen::genCodeForStoreInd(GenTreeStoreInd* tree)
 
         const bool _rtgc = true;
         if (_rtgc) {
-            // 'addr' goes into x14 (REG_WRITE_BARRIER_DST)
+            // 'addr' goes into x0
             genCopyRegIfNeeded(addr, REG_ARG_0);
 
-            // 'data' goes into x15 (REG_WRITE_BARRIER_SRC)
+            // 'data' goes into x1
             genCopyRegIfNeeded(data, REG_ARG_1);
         } else {
             // 'addr' goes into x14 (REG_WRITE_BARRIER_DST)

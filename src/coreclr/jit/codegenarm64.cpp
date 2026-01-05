@@ -3588,20 +3588,21 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
 #endif // DEBUG
 
     const bool _rtgc = !dstOnStack && cpObjNode->GetLayout()->GetGCPtrCount() > 0;
-    if (_rtgc) {
-        // genEmitHelperCall(CORINFO_HELP_ASSIGN_BYREF, 0, EA_PTRSIZE);
-        // gcInfo.gcMarkRegSetNpt(RBM_CALLEE_TRASH);
-        // return;
-    }
 
     // Consume the operands and get them into the right registers.
     // They may now contain gc pointers (depending on their type; gcMarkRegPtrVal will "do the right thing").
     // _rtgc
-    regNumber DST_BYREF = REG_WRITE_BARRIER_DST_BYREF;
-    regNumber SRC_BYREF = REG_WRITE_BARRIER_SRC_BYREF;
+    regNumber DST_BYREF = _rtgc ? REG_ARG_0 : REG_WRITE_BARRIER_DST_BYREF;
+    regNumber SRC_BYREF = _rtgc ? REG_ARG_1 : REG_WRITE_BARRIER_SRC_BYREF;
     genConsumeBlockOp(cpObjNode, DST_BYREF, SRC_BYREF, REG_NA);
     gcInfo.gcMarkRegPtrVal(SRC_BYREF, srcAddrType);
     gcInfo.gcMarkRegPtrVal(DST_BYREF, dstAddr->TypeGet());
+
+    if (_rtgc) {
+        genEmitHelperCall(CORINFO_HELP_ASSIGN_BYREF, 0, EA_PTRSIZE);
+        gcInfo.gcMarkRegSetNpt(RBM_CALLEE_TRASH);
+        return;
+    }
 
     ClassLayout* layout = cpObjNode->GetLayout();
     unsigned     slots  = layout->GetSlotCount();
@@ -3740,7 +3741,11 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
     // Clear the gcInfo for SRC_BYREF and DST_BYREF.
     // While we normally update GC info prior to the last instruction that uses them,
     // these actually live into the helper call.
-    gcInfo.gcMarkRegSetNpt(RBM_WRITE_BARRIER_SRC_BYREF | RBM_WRITE_BARRIER_DST_BYREF);
+    if (_rtgc) {
+        gcInfo.gcMarkRegSetNpt(RBM_R0 | RBM_R1);
+    } else {
+        gcInfo.gcMarkRegSetNpt(RBM_WRITE_BARRIER_SRC_BYREF | RBM_WRITE_BARRIER_DST_BYREF);
+    }
 }
 
 // generate code do a switch statement based on a table of ip-relative offsets

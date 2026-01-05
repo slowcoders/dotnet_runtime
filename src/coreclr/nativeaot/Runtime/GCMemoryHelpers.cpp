@@ -104,11 +104,36 @@ FCIMPL3(void, RhpCheckedAssignRefArm64_rtgc, Object **dst, Object *ref, Object *
 FCIMPLEND
 
 // EXTERN_C void F_CALL_CONV 
-FCIMPL3(void, RhpByRefAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
+struct byRef_Res {
+    Object *dst; Object *ref;
+};
+
+FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc, Object *dst, Object *ref, Object *owner)
 {
     if (call_rhp_assign_ref) {
-        GCToOSInterface::DebugBreak();
-        RhpByRefAssignRefArm64(dst, ref);
+
+        const bool notInHeap = (void*)dst < g_lowest_address || (void*)dst >= g_highest_address;
+        assert(!notInHeap);
+
+        size_t obj_size = ref->GetSize() * sizeof(uintptr_t);        
+        InlinedBulkWriteBarrier(dst, obj_size);
+
+        InlineForwardGCSafeCopy(dst, ref, obj_size);
+
+        byRef_Res res;
+        res.dst = dst;
+        res.ref = ref;
+        return res;
+        //GCToOSInterface::DebugBreak();
+        //RhpByRefAssignRefArm64(dst, ref);
+        // go_through_object_nostart (mT, src, obj_size, pval,
+        //             {
+        //                 size_t gap_offset = (((size_t)pval - (size_t)(plug - sizeof (gap_reloc_pair) - plug_skew))) / sizeof (uint8_t*);
+        //                 dprintf (3, ("member: %p->%p, %zd ptrs from beginning of gap", (uint8_t*)pval, *pval, gap_offset));
+        //                 m.set_pre_short_bit (gap_offset);
+        //             }
+        //         );    
+
     } else {
         PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
     }

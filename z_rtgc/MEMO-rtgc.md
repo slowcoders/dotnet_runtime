@@ -90,3 +90,11 @@
 CObjectHeader::void SetMarked()
 mark_object_simple1.cpp
     go_through_object 를 통해 ref field interation??
+
+
+#### dest가 Ephemeral 세대라도 Write Barrier를 생략하지 않는 이유:
+    1. 객체 승격으로 인한 미래 참조 추적 필요
+    2. 구현 단순성과 안전성 우선
+    3. Ephemeral card table의 빈번한 초기화로 인한 영향 최소화
+이는 GC의 정확성과 단순성 사이의 타협점입니다. Ephemeral 세대의 Write Barrier는 상대적으로 저비용이므로 생략하지 않습니다.
+

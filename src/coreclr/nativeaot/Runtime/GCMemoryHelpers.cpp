@@ -108,15 +108,25 @@ struct byRef_Res {
     Object *dst; Object *ref;
 };
 
-FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc, Object *dst, Object *ref, Object *owner)
+FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc, Object *dst, Object *ref, int slotCount)
 {
     if (call_rhp_assign_ref) {
 
-        const bool notInHeap = (void*)dst < g_lowest_address || (void*)dst >= g_highest_address;
-        assert(!notInHeap);
+        const bool inHeap = (void*)dst >= g_lowest_address && (void*)dst < g_highest_address;
+        
+        //assert(!notInHeap);
 
-        size_t obj_size = ref->GetSize() * sizeof(uintptr_t);        
-        InlinedBulkWriteBarrier(dst, obj_size);
+        // Object* ref = ppObj[0];
+        // const char* szClsName = DBG_CLASS_NAME_OBJ(ref);
+        //     LOG((LF_GC, LL_INFO10000, "\tPromoting secondary " LOG_OBJECT_CLASS(ref)));
+
+        // const char* pszClsName = ((MethodTable*)((size_t)((Object*) (ref))->GetGCSafeMethodTable()))->GetClass()->;
+        // size_t obj_size = ref->GetSize();
+        size_t obj_size = slotCount * 8;
+        // size_t obj_size = ref->GetSize() * sizeof(uintptr_t);        
+        if (inHeap) {
+            InlinedBulkWriteBarrier(dst, obj_size);
+        }
 
         InlineForwardGCSafeCopy(dst, ref, obj_size);
 
@@ -124,16 +134,6 @@ FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc, Object *dst, Object *ref, Object
         res.dst = dst;
         res.ref = ref;
         return res;
-        //GCToOSInterface::DebugBreak();
-        //RhpByRefAssignRefArm64(dst, ref);
-        // go_through_object_nostart (mT, src, obj_size, pval,
-        //             {
-        //                 size_t gap_offset = (((size_t)pval - (size_t)(plug - sizeof (gap_reloc_pair) - plug_skew))) / sizeof (uint8_t*);
-        //                 dprintf (3, ("member: %p->%p, %zd ptrs from beginning of gap", (uint8_t*)pval, *pval, gap_offset));
-        //                 m.set_pre_short_bit (gap_offset);
-        //             }
-        //         );    
-
     } else {
         PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
     }

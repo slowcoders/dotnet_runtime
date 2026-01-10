@@ -3598,14 +3598,15 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
     gcInfo.gcMarkRegPtrVal(SRC_BYREF, srcAddrType);
     gcInfo.gcMarkRegPtrVal(DST_BYREF, dstAddr->TypeGet());
 
+    ClassLayout* layout = cpObjNode->GetLayout();
+    unsigned     slots  = layout->GetSlotCount();
+
     if (_rtgc) {
+        instGen_Set_Reg_To_Imm(EA_8BYTE, REG_ARG_2, slots);
         genEmitHelperCall(CORINFO_HELP_ASSIGN_BYREF, 0, EA_PTRSIZE);
         gcInfo.gcMarkRegSetNpt(RBM_CALLEE_TRASH);
         return;
     }
-
-    ClassLayout* layout = cpObjNode->GetLayout();
-    unsigned     slots  = layout->GetSlotCount();
 
     // Temp register(s) used to perform the sequence of loads and stores.
     regNumber tmpReg  = internalRegisters.Extract(cpObjNode, RBM_ALLINT);

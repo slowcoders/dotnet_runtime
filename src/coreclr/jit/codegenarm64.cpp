@@ -3601,7 +3601,7 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
     ClassLayout* layout = cpObjNode->GetLayout();
     unsigned     slots  = layout->GetSlotCount();
 
-    if (_rtgc) {
+    if (false && _rtgc) {
         instGen_Set_Reg_To_Imm(EA_8BYTE, REG_ARG_2, slots);
         genEmitHelperCall(CORINFO_HELP_ASSIGN_BYREF, 0, EA_PTRSIZE);
         gcInfo.gcMarkRegSetNpt(RBM_CALLEE_TRASH);
@@ -3609,7 +3609,7 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
     }
 
     // Temp register(s) used to perform the sequence of loads and stores.
-    regNumber tmpReg  = internalRegisters.Extract(cpObjNode, RBM_ALLINT);
+    regNumber tmpReg  = _rtgc ? REG_WRITE_BARRIER_DST_BYREF : internalRegisters.Extract(cpObjNode, RBM_ALLINT);
     regNumber tmpReg2 = REG_NA;
 
     assert(genIsValidIntReg(tmpReg));
@@ -3618,7 +3618,7 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
 
     if (slots > 1)
     {
-        tmpReg2 = internalRegisters.Extract(cpObjNode, RBM_ALLINT);
+        tmpReg2 = _rtgc ? REG_WRITE_BARRIER_SRC_BYREF : internalRegisters.Extract(cpObjNode, RBM_ALLINT);
         assert(tmpReg2 != tmpReg);
         assert(genIsValidIntReg(tmpReg2));
         assert(tmpReg2 != DST_BYREF);

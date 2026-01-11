@@ -105,25 +105,31 @@ FCIMPLEND
 
 // EXTERN_C void F_CALL_CONV 
 struct byRef_Res {
-    Object *dst; Object *ref;
+    intptr_t dst; intptr_t ref;
 };
 
-FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc, Object *dst, Object *ref, int slotCount)
+FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc, Object **dst, Object **src, Object *owner)
+{
+    if (call_rhp_assign_ref) {
+        Object* ref = *src;
+        *dst = ref;
+        InlineCheckedWriteBarrier(dst, ref);
+        byRef_Res res;
+        res.dst = (intptr_t)dst + 8;
+        res.ref = (intptr_t)src + 8;
+        return res;
+    } else {
+        PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
+    }
+}
+FCIMPLEND
+
+FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc_old, void *dst, void *ref, int slotCount)
 {
     if (call_rhp_assign_ref) {
 
-        const bool inHeap = (void*)dst >= g_lowest_address && (void*)dst < g_highest_address;
-        
-        //assert(!notInHeap);
-
-        // Object* ref = ppObj[0];
-        // const char* szClsName = DBG_CLASS_NAME_OBJ(ref);
-        //     LOG((LF_GC, LL_INFO10000, "\tPromoting secondary " LOG_OBJECT_CLASS(ref)));
-
-        // const char* pszClsName = ((MethodTable*)((size_t)((Object*) (ref))->GetGCSafeMethodTable()))->GetClass()->;
-        // size_t obj_size = ref->GetSize();
+        const bool inHeap = dst >= g_lowest_address && dst < g_highest_address;
         size_t obj_size = slotCount * 8;
-        // size_t obj_size = ref->GetSize() * sizeof(uintptr_t);        
         if (inHeap) {
             InlinedBulkWriteBarrier(dst, obj_size);
         }
@@ -131,8 +137,8 @@ FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc, Object *dst, Object *ref, int sl
         InlineForwardGCSafeCopy(dst, ref, obj_size);
 
         byRef_Res res;
-        res.dst = dst;
-        res.ref = ref;
+        res.dst = (intptr_t)dst;
+        res.ref = (intptr_t)ref;
         return res;
     } else {
         PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");

@@ -275,7 +275,7 @@ LEAF_ENTRY RhpAssignRefArm64, _TEXT
     ALTERNATE_ENTRY RhpAssignRefAVLocation
         stlr    x15, [x14]
 
-        b       C_FUNC(_rtgc_debug_trap)
+        // b       C_FUNC(_rtgc_debug_trap)
 
         INSERT_UNCHECKED_WRITE_BARRIER_CORE x14, x15
 

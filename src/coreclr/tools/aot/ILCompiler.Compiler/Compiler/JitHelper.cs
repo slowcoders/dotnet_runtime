@@ -19,6 +19,7 @@ namespace ILCompiler
         {
             mangledName = null;
             methodDesc = null;
+            const bool _rtgc = false;
 
             switch (id)
             {

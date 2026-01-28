@@ -3587,7 +3587,7 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
     assert(cpObjNode->GetLayout()->HasGCPtr());
 #endif // DEBUG
 
-    const bool _rtgc = !dstOnStack && cpObjNode->GetLayout()->GetGCPtrCount() > 0;
+    const bool _rtgc = false && !dstOnStack && cpObjNode->GetLayout()->GetGCPtrCount() > 0;
 
     // Consume the operands and get them into the right registers.
     // They may now contain gc pointers (depending on their type; gcMarkRegPtrVal will "do the right thing").
@@ -4247,7 +4247,7 @@ void CodeGen::genCodeForStoreInd(GenTreeStoreInd* tree)
         //  as that is where 'addr' must go.
         noway_assert(data->GetRegNum() != REG_WRITE_BARRIER_DST);
 
-        const bool _rtgc = true;
+        const bool _rtgc = false;
         if (_rtgc) {
             // 'addr' goes into x0
             genCopyRegIfNeeded(addr, REG_ARG_0);

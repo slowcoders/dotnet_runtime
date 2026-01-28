@@ -37,7 +37,7 @@ namespace System.Runtime
 
         private static CastCache s_castCache = new CastCache(InitialCacheSize, MaximumCacheSize);
 
-        private static bool ENABLE_rtgc = true;
+        private static bool ENABLE_rtgc;// = true;
 
         [Flags]
         internal enum AssignmentVariation

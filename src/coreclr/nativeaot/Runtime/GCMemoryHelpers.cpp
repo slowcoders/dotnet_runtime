@@ -70,7 +70,15 @@ FCIMPL3(void, RhBulkMoveWithWriteBarrier, uint8_t* pDest, uint8_t* pSrc, size_t 
 }
 FCIMPLEND
 
+// ***********************************************
 // --- RTGC brrriers ---
+//
+
+FORCEINLINE void rtgc_InlineWriteBarrier(Object ** dst, Object * ref) {
+    *dst = ref;
+    InlineWriteBarrier(dst, ref);
+}
+
 
 FCDECL2(void, RhpAssignRef, Object **dst, Object *ref);
 FCDECL2(void, RhpCheckedAssignRef_rtgc_s, Object **dst, Object *ref);
@@ -81,68 +89,31 @@ int cnt = 0;
 // EXTERN_C void F_CALL_CONV 
 FCIMPL3(void, RhpAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
-    if (call_rhp_assign_ref) {
-        *dst = ref;
-        InlineWriteBarrier(dst, ref);
-    } else {
-        PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
-    }
+    rtgc_InlineWriteBarrier(dst, ref);
 }
 FCIMPLEND
 
 // EXTERN_C void F_CALL_CONV 
 FCIMPL3(void, RhpCheckedAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
-    if (call_rhp_assign_ref) {
-        *dst = ref;
-        InlineCheckedWriteBarrier(dst, ref);
-        // RhpCheckedAssignRef_rtgc_s(dst, ref);
-    } else {
-        PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
-    }
+    if (((uint8_t*)dst < g_lowest_address) || ((uint8_t*)dst >= g_highest_address))
+        return;
+    rtgc_InlineWriteBarrier(dst, ref);
 }
 FCIMPLEND
 
 // EXTERN_C void F_CALL_CONV 
 struct byRef_Res {
-    intptr_t dst; intptr_t ref;
+    intptr_t dst; intptr_t src;
 };
 
 FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc, Object **dst, Object **src, Object *owner)
 {
-    if (call_rhp_assign_ref) {
-        Object* ref = *src;
-        *dst = ref;
-        InlineCheckedWriteBarrier(dst, ref);
-        byRef_Res res;
-        res.dst = (intptr_t)dst + 8;
-        res.ref = (intptr_t)src + 8;
-        return res;
-    } else {
-        PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
-    }
-}
-FCIMPLEND
-
-FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc_old, void *dst, void *ref, int slotCount)
-{
-    if (call_rhp_assign_ref) {
-
-        const bool inHeap = dst >= g_lowest_address && dst < g_highest_address;
-        size_t obj_size = slotCount * 8;
-        if (inHeap) {
-            InlinedBulkWriteBarrier(dst, obj_size);
-        }
-
-        InlineForwardGCSafeCopy(dst, ref, obj_size);
-
-        byRef_Res res;
-        res.dst = (intptr_t)dst;
-        res.ref = (intptr_t)ref;
-        return res;
-    } else {
-        PORTABILITY_ASSERT("RhpAssignRef is not yet implemented");
-    }
+    rtgc_InlineWriteBarrier(dst, *src);
+    byRef_Res res;
+    res.dst = (intptr_t)dst + sizeof(Object*);
+    res.src = (intptr_t)src + sizeof(Object*);
+    return res;
 }
 FCIMPLEND
 

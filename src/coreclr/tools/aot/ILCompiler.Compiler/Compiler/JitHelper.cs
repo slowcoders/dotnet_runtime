@@ -64,20 +64,22 @@ namespace ILCompiler
                 case ReadyToRunHelper.WriteBarrier:
                     mangledName = context.Target.Architecture switch
                     {
-                        TargetArchitecture.ARM64 => "RhpAssignRefArm64_rtgc",
+                        TargetArchitecture.ARM64 => _rtgc ? "RhpAssignRefArm64_rtgc" : "RhpAssignRefArm64",
                         TargetArchitecture.LoongArch64 => "RhpAssignRefLoongArch64",
                         TargetArchitecture.RiscV64 => "RhpAssignRefRiscV64",
                         _ => "RhpAssignRef"
                     };
                     break;
                 case ReadyToRunHelper.CheckedWriteBarrier:
-                    mangledName = context.Target.Architecture == TargetArchitecture.ARM64 ? "RhpCheckedAssignRefArm64_rtgc" : "RhpCheckedAssignRef";
+                    mangledName = context.Target.Architecture == TargetArchitecture.ARM64
+                         ? (_rtgc ? "RhpCheckedAssignRefArm64_rtgc" : "RhpCheckedAssignRefArm64") : "RhpCheckedAssignRef";
                     break;
                 case ReadyToRunHelper.BulkWriteBarrier:
                     methodDesc = context.GetCoreLibEntryPoint("System"u8, "Buffer"u8, "BulkMoveWithWriteBarrier"u8, null);
                     break;
                 case ReadyToRunHelper.ByRefWriteBarrier:
-                    mangledName = context.Target.Architecture == TargetArchitecture.ARM64 ? "RhpByRefAssignRefArm64_rtgc" : "RhpByRefAssignRef";
+                    mangledName = context.Target.Architecture == TargetArchitecture.ARM64
+                         ? (_rtgc ? "RhpByRefAssignRefArm64_rtgc" : "RhpByRefAssignRefArm64") : "RhpByRefAssignRef";
                     break;
                 case ReadyToRunHelper.WriteBarrier_EAX:
                     mangledName = "RhpAssignRefEAX";

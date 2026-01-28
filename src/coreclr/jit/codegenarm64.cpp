@@ -3591,7 +3591,6 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
 
     // Consume the operands and get them into the right registers.
     // They may now contain gc pointers (depending on their type; gcMarkRegPtrVal will "do the right thing").
-    // _rtgc
     regNumber DST_BYREF = _rtgc ? REG_ARG_0 : REG_WRITE_BARRIER_DST_BYREF;
     regNumber SRC_BYREF = _rtgc ? REG_ARG_1 : REG_WRITE_BARRIER_SRC_BYREF;
     genConsumeBlockOp(cpObjNode, DST_BYREF, SRC_BYREF, REG_NA);
@@ -3600,13 +3599,6 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
 
     ClassLayout* layout = cpObjNode->GetLayout();
     unsigned     slots  = layout->GetSlotCount();
-
-    if (false && _rtgc) {
-        instGen_Set_Reg_To_Imm(EA_8BYTE, REG_ARG_2, slots);
-        genEmitHelperCall(CORINFO_HELP_ASSIGN_BYREF, 0, EA_PTRSIZE);
-        gcInfo.gcMarkRegSetNpt(RBM_CALLEE_TRASH);
-        return;
-    }
 
     // Temp register(s) used to perform the sequence of loads and stores.
     regNumber tmpReg  = _rtgc ? REG_WRITE_BARRIER_DST_BYREF : internalRegisters.Extract(cpObjNode, RBM_ALLINT);
@@ -3723,7 +3715,6 @@ void CodeGen::genCodeForCpObj(GenTreeBlk* cpObjNode)
             }
             else
             {
-                // _rtgc
                 // In the case of a GC-Pointer we'll call the ByRef write barrier helper
                 genEmitHelperCall(CORINFO_HELP_ASSIGN_BYREF, 0, EA_PTRSIZE);
                 gcPtrCount--;

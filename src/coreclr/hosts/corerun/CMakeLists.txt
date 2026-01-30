@@ -105,7 +105,7 @@ else()
             install(FILES "./wasm/corerun.html" DESTINATION . COMPONENT hosts)
         endif()
     endif()
-    # _rtgc_static
+    # _rtgc_config_static_link
     # if(CLR_CMAKE_TARGET_ARCH_ARM64)
     #     target_link_libraries(corerun PRIVATE
     #     coreclr_static

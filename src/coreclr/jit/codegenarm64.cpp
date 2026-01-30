@@ -4247,7 +4247,7 @@ void CodeGen::genCodeForStoreInd(GenTreeStoreInd* tree)
         //  as that is where 'addr' must go.
         noway_assert(data->GetRegNum() != REG_WRITE_BARRIER_DST);
 
-        const bool _rtgc = false;
+        const bool _rtgc = false; // genCodeForStoreInd (AssignRef, CheckedAssignRef)
         if (_rtgc) {
             // 'addr' goes into x0
             genCopyRegIfNeeded(addr, REG_ARG_0);

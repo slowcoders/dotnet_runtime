@@ -11,8 +11,31 @@
             // "program": "${workspaceFolder}/artifacts/tests/coreclr/osx.arm64.Debug/nativeaot/SmokeTests/UnitTests/UnitTests/native/UnitTests",
 
             "program": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug/corerun",
-            "args": ["-p", "System.Linq.Expressions.CanEmitObjectArrayDelegate=false", "-p", "Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability=true", "-p", "System.ComponentModel.DefaultValueAttribute.IsSupported=false", "-p", "System.ComponentModel.Design.IDesignerHost.IsSupported=false", "-p", "System.ComponentModel.TypeConverter.EnableUnsafeBinaryFormatterInDesigntimeLicenseContextSerialization=false", "-p", "System.ComponentModel.TypeDescriptor.IsComObjectDescriptorSupported=false", "-p", "System.Data.DataSet.XmlSerializationIsSupported=false", "-p", "System.Diagnostics.Tracing.EventSource.IsSupported=false", "-p", "System.Linq.Enumerable.IsSizeOptimized=true", "-p", "System.Net.SocketsHttpHandler.Http3Support=false", "-p", "System.Reflection.Metadata.MetadataUpdater.IsSupported=false", "-p", "System.Resources.ResourceManager.AllowCustomResourceTypes=false", "-p", "System.Resources.UseSystemResourceKeys=false", "-p", "System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported=false", "-p", "System.Runtime.InteropServices.BuiltInComInterop.IsSupported=false", "-p", "System.Runtime.InteropServices.EnableConsumingManagedCodeFromNativeHosting=false", "-p", "System.Runtime.InteropServices.EnableCppCLIHostActivation=false", "-p", "System.Runtime.InteropServices.Marshalling.EnableGeneratedComInterfaceComImportInterop=false", "-p", "System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization=true", "-p", "System.StartupHookProvider.IsSupported=false", "-p", "System.Text.Encoding.EnableUnsafeUTF7Encoding=false", "-p", "System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault=false", "-p", "System.Threading.Thread.EnableAutoreleasePool=false",
-             "artifacts/tests/coreclr/osx.arm64.Debug/nativeaot/nativeaot/nativeaot.dll"],           
+            "args": ["-p", "System.Linq.Expressions.CanEmitObjectArrayDelegate=false", 
+                    "-p", "Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability=true", 
+                    "-p", "System.ComponentModel.DefaultValueAttribute.IsSupported=false", 
+                    "-p", "System.ComponentModel.Design.IDesignerHost.IsSupported=false", 
+                    "-p", "System.ComponentModel.TypeConverter.EnableUnsafeBinaryFormatterInDesigntimeLicenseContextSerialization=false", 
+                    "-p", "System.ComponentModel.TypeDescriptor.IsComObjectDescriptorSupported=false", 
+                    "-p", "System.Data.DataSet.XmlSerializationIsSupported=false", 
+                    "-p", "System.Diagnostics.Tracing.EventSource.IsSupported=false", 
+                    "-p", "System.Linq.Enumerable.IsSizeOptimized=true", 
+                    "-p", "System.Net.SocketsHttpHandler.Http3Support=false", 
+                    "-p", "System.Reflection.Metadata.MetadataUpdater.IsSupported=false", 
+                    "-p", "System.Resources.ResourceManager.AllowCustomResourceTypes=false", 
+                    "-p", "System.Resources.UseSystemResourceKeys=false", 
+                    "-p", "System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported=false", 
+                    "-p", "System.Runtime.InteropServices.BuiltInComInterop.IsSupported=false", 
+                    "-p", "System.Runtime.InteropServices.EnableConsumingManagedCodeFromNativeHosting=false", 
+                    "-p", "System.Runtime.InteropServices.EnableCppCLIHostActivation=false", 
+                    "-p", "System.Runtime.InteropServices.Marshalling.EnableGeneratedComInterfaceComImportInterop=false", 
+                    "-p", "System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization=true", 
+                    "-p", "System.StartupHookProvider.IsSupported=false", 
+                    "-p", "System.Text.Encoding.EnableUnsafeUTF7Encoding=false", 
+                    "-p", "System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault=false", 
+                    "-p", "System.Threading.Thread.EnableAutoreleasePool=false",
+                    "artifacts/tests/coreclr/osx.arm64.Debug/nativeaot/nativeaot/nativeaot.dll"
+                ],           
             // "args": ["${workspaceRoot}/artifacts/tests/host/osx.arm64.Debug/HelloWorld/HelloWorld.dll"],
             // "args": ["${workspaceRoot}/artifacts/tests/coreclr/osx.arm64.Debug/GC/Performance/Tests/GCPerf/GCPerf.dll"],
                                        
@@ -24,17 +47,16 @@
             // },            
             
             "env": {
-                // "DYLD_LIBRARY_PATH": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug",
-                // "DOTNET_ROOT": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug",
-                // "CLR_PATH": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug",
-
-                // "CORE_ROOT": "${workspaceRoot}/artifacts/bin/coreclr-pack/Debug/net10.0/osx-arm64",
-                "CORE_ROOT": "${workspaceRoot}/artifacts/bin/testhost/net10.0-osx-Debug-arm64/shared/Microsoft.NETCore.App/10.0.0",
+                "DOTNET_ROOT": "${workspaceFolder}/artifacts/bin/coreclr/osx.arm64.Debug",
+                "__TestDotNetCmd": "/Users/zeedhoon/slowcoders/dotnet/dotnet_runtime/dotnet.sh",
+                "CORE_ROOT": "${workspaceRoot}/artifacts/tests/coreclr/osx.arm64.Debug/Tests/Core_Root",
                 "COMPlus_ZapDisable": "1", // JIT Cache 비활성화
                 "COMPlus_ReadyToRun": "0", // # R2R 비활성화
                 "COMPlus_TieredCompilation": "0",
                 "COMPlus_DbgEnableMiniDump": "1"
             },
+
+            "cwd": "${workspaceFolder}/artifacts",
         },
     ]
 }

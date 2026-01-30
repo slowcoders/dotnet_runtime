@@ -37,7 +37,7 @@ namespace System.Runtime
 
         private static CastCache s_castCache = new CastCache(InitialCacheSize, MaximumCacheSize);
 
-        private static bool ENABLE_rtgc;// = true;
+        private static bool _rtgc;// = true; // StelemRef
 
         [Flags]
         internal enum AssignmentVariation
@@ -805,7 +805,7 @@ namespace System.Runtime
                 goto notExactMatch;
 
         doWrite:
-            if (ENABLE_rtgc)
+            if (_rtgc)
                 InternalCalls.RhpAssignRefArm64_rtgc(ref element, obj, array);
             else
                 InternalCalls.RhpAssignRef(ref element, obj);
@@ -832,7 +832,7 @@ namespace System.Runtime
             CastResult result = s_castCache.TryGet((nuint)obj.GetMethodTable() + (int)AssignmentVariation.BoxedSource, (nuint)elementType);
             if (result == CastResult.CanCast)
             {
-                if (ENABLE_rtgc)
+                if (_rtgc)
                 {
                     InternalCalls.RhpAssignRefArm64_rtgc(ref element, obj, array_rtgc);
                 }
@@ -856,7 +856,7 @@ namespace System.Runtime
                 throw elementType->GetClasslibException(ExceptionIDs.ArrayTypeMismatch);
             }
 
-            if (ENABLE_rtgc)
+            if (_rtgc)
                 InternalCalls.RhpAssignRefArm64_rtgc(ref element, obj, array_rtgc);
             else
                 InternalCalls.RhpAssignRef(ref element, obj);

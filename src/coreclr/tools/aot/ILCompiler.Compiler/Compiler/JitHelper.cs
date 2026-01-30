@@ -19,7 +19,7 @@ namespace ILCompiler
         {
             mangledName = null;
             methodDesc = null;
-            const bool _rtgc = false;
+            const bool _rtgc = false; // GetEntryPoint
 
             switch (id)
             {
@@ -80,7 +80,7 @@ namespace ILCompiler
                     break;
                 case ReadyToRunHelper.ByRefWriteBarrier:
                     mangledName = context.Target.Architecture == TargetArchitecture.ARM64
-                         ? (_rtgc ? "RhpByRefAssignRefArm64_rtgc" : "RhpByRefAssignRefArm64") : "RhpByRefAssignRef";
+                         ? ((_rtgc && false) ? "RhpByRefAssignRefArm64_rtgc" : "RhpByRefAssignRefArm64") : "RhpByRefAssignRef";
                     break;
                 case ReadyToRunHelper.WriteBarrier_EAX:
                     mangledName = "RhpAssignRefEAX";

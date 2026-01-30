@@ -14513,7 +14513,8 @@ HRESULT gc_heap::initialize_gc (size_t soh_segment_size,
     uint64_t th = (uint64_t)SH_TH_CARD_BUNDLE;
 #endif //MULTIPLE_HEAPS
 
-    if (/*_rtgc*/false && can_use_write_watch_for_card_table() && reserved_memory >= th)
+    const bool _rtgc_config = true;
+    if (!_rtgc_config && can_use_write_watch_for_card_table() && reserved_memory >= th)
     {
         settings.card_bundles = TRUE;
     }

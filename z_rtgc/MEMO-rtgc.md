@@ -1,3 +1,35 @@
+## Rosetta
+```sh
+softwareupdate --install-rosetta
+### bash
+arch -x86_64 zsh
+uname -m # --> x86_84 확인.
+
+# x86용 homebrew 설치.
+arch -x86_64 /bin/bash -c \
+"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# brew 설치 위치 확인 후, /usr/local/ 이 아니면 이동
+which brew
+mv /opt/homebrew/bin/brew /usr/local
+
+## .dotnet 삭제 후 재설치 (x86_64 버전으로)
+# rm -rf .dotnet
+./eng/common/native/install-dependencies.sh
+
+## dotnet(x64) 실행 환경 별도 추가.
+## brew 가 아닌 공식 MS dotnet-sdk 설치 후,
+## ~/.dotnet 을 path에 추가.
+# curl -LO https://dot.net/v1/dotnet-install.sh
+# arch -x86_64 bash dotnet-install.sh \
+#  --channel 9.0 \
+#  --architecture x64
+
+
+
+```
+
+
+
 ### Hints
 - SetObjectReferenceUnchecked
 - ErectWriteBarrier → gchelpers.cpp : 기본 WriteBarrier. 실제 사용 시엔 Assembly??<br>

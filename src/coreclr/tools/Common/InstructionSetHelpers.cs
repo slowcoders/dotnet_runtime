@@ -104,7 +104,7 @@ namespace System.CommandLine
                     throw new CommandLineException("Instruction set 'native' not supported when cross-compiling to a different architecture.");
                 }
 
-                string jitInterfaceLibrary = "jitinterface_" + RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant();
+                string jitInterfaceLibrary = "jitinterface_1000" + RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant();
                 nint libHandle = NativeLibrary.Load(jitInterfaceLibrary, System.Reflection.Assembly.GetExecutingAssembly(), DllImportSearchPath.AssemblyDirectory);
                 int cpuFeatures;
                 unsafe

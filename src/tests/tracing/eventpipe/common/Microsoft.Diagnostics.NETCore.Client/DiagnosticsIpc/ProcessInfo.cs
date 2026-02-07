@@ -75,7 +75,7 @@ namespace Microsoft.Diagnostics.NETCore.Client
 
             processInfo.CommandLine = IpcHelpers.ReadString(payload, ref index);
             processInfo.OperatingSystem = IpcHelpers.ReadString(payload, ref index);
-            processInfo.ProcessArchitecture = IpcHelpers.ReadString(payload, ref index);
+            processInfo.ProcessArchitecture = "X64";// IpcHelpers.ReadString(payload, ref index);
 
             return processInfo;
         }

@@ -7,7 +7,7 @@ namespace System.Runtime.InteropServices
 {
     public static partial class RuntimeInformation
     {
-        private static volatile int s_osArchPlusOne;
+        // private static volatile int s_osArchPlusOne;
 
         public static string OSDescription => field ??=
 #if TARGET_ANDROID
@@ -32,18 +32,19 @@ namespace System.Runtime.InteropServices
         {
             get
             {
-                int osArch = s_osArchPlusOne - 1;
+                return Architecture.X64;
+                // int osArch = s_osArchPlusOne - 1;
 
-                if (osArch < 0)
-                {
-                    osArch = Interop.Sys.GetOSArchitecture();
-                    if (osArch < 0)
-                        osArch = (int)ProcessArchitecture;
-                    s_osArchPlusOne = osArch + 1;
-                }
+                // if (osArch < 0)
+                // {
+                //     osArch = Interop.Sys.GetOSArchitecture();
+                //     if (osArch < 0)
+                //         osArch = (int)ProcessArchitecture;
+                //     s_osArchPlusOne = osArch + 1;
+                // }
 
-                Debug.Assert(osArch >= 0);
-                return (Architecture)osArch;
+                // Debug.Assert(osArch >= 0);
+                // return (Architecture)osArch;
             }
         }
     }

@@ -72,8 +72,13 @@ enum
     ARCH_RISCV64,
 };
 
+#define TARGET_RTGC_ROSSETA 1
+
 int32_t SystemNative_GetOSArchitecture(void)
 {
+#ifdef TARGET_RTGC_ROSSETA
+    return ARCH_X64;
+#else
 #ifdef TARGET_WASM
     return ARCH_WASM;
 #else
@@ -153,5 +158,6 @@ int32_t SystemNative_GetOSArchitecture(void)
     assert(result != -1);
 
     return result;
+#endif
 #endif
 }

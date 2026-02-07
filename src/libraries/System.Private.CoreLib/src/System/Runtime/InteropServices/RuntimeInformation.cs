@@ -25,30 +25,30 @@ namespace System.Runtime.InteropServices
         /// </summary>
         public static bool IsOSPlatform(OSPlatform osPlatform) => OperatingSystem.IsOSPlatform(osPlatform.Name);
 
-        public static Architecture ProcessArchitecture
-#if TARGET_X86
-            => Architecture.X86
-#elif TARGET_AMD64
-            => Architecture.X64
-#elif TARGET_ARMV6
-            => Architecture.Armv6
-#elif TARGET_ARM
-            => Architecture.Arm
-#elif TARGET_ARM64
-            => Architecture.Arm64
-#elif TARGET_WASM
-            => Architecture.Wasm
-#elif TARGET_S390X
-            => Architecture.S390x
-#elif TARGET_LOONGARCH64
-            => Architecture.LoongArch64
-#elif TARGET_POWERPC64
-            => Architecture.Ppc64le
-#elif TARGET_RISCV64
-            => Architecture.RiscV64
-#else
-#error Unknown Architecture
-#endif
+        public static Architecture ProcessArchitecture => Architecture.X64
+// #if TARGET_X86
+//             => Architecture.X86
+// #elif TARGET_AMD64
+//             => Architecture.X64
+// #elif TARGET_ARMV6
+//             => Architecture.Armv6
+// #elif TARGET_ARM
+//             => Architecture.Arm
+// #elif TARGET_ARM64
+//             => Architecture.Arm64
+// #elif TARGET_WASM
+//             => Architecture.Wasm
+// #elif TARGET_S390X
+//             => Architecture.S390x
+// #elif TARGET_LOONGARCH64
+//             => Architecture.LoongArch64
+// #elif TARGET_POWERPC64
+//             => Architecture.Ppc64le
+// #elif TARGET_RISCV64
+//             => Architecture.RiscV64
+// #else
+// #error Unknown Architecture
+// #endif
         ;
     }
 }

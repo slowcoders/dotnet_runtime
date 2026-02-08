@@ -248,10 +248,12 @@ size_t WriteBarrierManager::GetSpecificWriteBarrierSize(WriteBarrierType writeBa
             return MARKED_FUNCTION_SIZE(JIT_WriteBarrier_WriteWatch_Bit_Region64);
 #endif // FEATURE_USE_SOFTWARE_WRITE_WATCH_FOR_GC_HEAP
         case WRITE_BARRIER_BUFFER:
+#if !defined(FEATURE_PORTABLE_HELPERS) && defined(FEATURE_USE_ASM_GC_WRITE_BARRIERS)  // rtgc patch  
 #if defined(WRITE_BARRIER_VARS_INLINE)
             return MARKED_FUNCTION_SIZE(JIT_WriteBarrier);
 #else
             return (size_t)((LPBYTE)GetEEFuncEntryPoint(JIT_WriteBarrier_Table_End) - (LPBYTE)GetEEFuncEntryPoint(JIT_WriteBarrier));
+#endif
 #endif
         default:
             UNREACHABLE_MSG("unexpected m_currentWriteBarrier!");
@@ -306,6 +308,7 @@ void WriteBarrierManager::Initialize()
     }
     CONTRACTL_END;
 
+#if !defined(FEATURE_PORTABLE_HELPERS) && defined(FEATURE_USE_ASM_GC_WRITE_BARRIERS)  // rtgc patch  
     // Ensure that the generic JIT_WriteBarrier function buffer is large enough to hold any of the more specific
     // write barrier implementations.
     size_t cbWriteBarrierBuffer = GetSpecificWriteBarrierSize(WRITE_BARRIER_BUFFER);
@@ -326,7 +329,7 @@ void WriteBarrierManager::Initialize()
     _ASSERTE_ALL_BUILDS(cbWriteBarrierBuffer >= GetSpecificWriteBarrierSize(WRITE_BARRIER_WRITE_WATCH_BYTE_REGIONS64));
     _ASSERTE_ALL_BUILDS(cbWriteBarrierBuffer >= GetSpecificWriteBarrierSize(WRITE_BARRIER_WRITE_WATCH_BIT_REGIONS64));
 #endif // FEATURE_USE_SOFTWARE_WRITE_WATCH_FOR_GC_HEAP
-
+#endif
 
 #if !defined(WRITE_BARRIER_VARS_INLINE)
 

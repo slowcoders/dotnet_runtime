@@ -534,7 +534,11 @@ HRESULT EEConfig::sync()
 
     fDisableOptimizedThreadStaticAccess = CLRConfig::GetConfigValue(CLRConfig::EXTERNAL_DisableOptimizedThreadStaticAccess) != 0;
 
+#if !defined(FEATURE_PORTABLE_HELPERS) && defined(FEATURE_USE_ASM_GC_WRITE_BARRIERS) // rtgc patch
     fIsWriteBarrierCopyEnabled = CLRConfig::GetConfigValue(CLRConfig::UNSUPPORTED_UseGCWriteBarrierCopy) != 0;
+#else 
+    fIsWriteBarrierCopyEnabled = false;
+#endif
 
 #ifdef TARGET_X86
     fPInvokeRestoreEsp = CLRConfig::GetConfigValue(CLRConfig::EXTERNAL_Jit_NetFx40PInvokeStackResilience);

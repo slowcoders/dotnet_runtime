@@ -57,8 +57,8 @@ namespace Internal.JitInterface
                 }
                 if (libName == CorInfoImpl.JitSupportLibrary)
                 {
-                    const bool _rtgc_rosseta = true;
-                    string jitLib = _rtgc_rosseta ? "x64" : RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant();
+                    const bool _rtgc_rosetta = true;
+                    string jitLib = _rtgc_rosetta ? "x64" : RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant();
                     libHandle = NativeLibrary.Load("jitinterface_" + jitLib, assembly, searchPath);
                 }
                 return libHandle;

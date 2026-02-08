@@ -30246,7 +30246,7 @@ void gc_heap::mark_phase (int condemned_gen_number)
             }
 #endif //MULTIPLE_HEAPS
 #endif //CARD_BUNDLE
-
+// _rtgc mark_phase
             card_fn mark_object_fn = &gc_heap::mark_object_simple;
 #ifdef HEAP_ANALYZE
             heap_analyze_success = TRUE;

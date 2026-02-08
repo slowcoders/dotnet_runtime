@@ -105,6 +105,14 @@ else()
             install(FILES "./wasm/corerun.html" DESTINATION . COMPONENT hosts)
         endif()
     endif()
+    # _rtgc_static
+        target_link_libraries(corerun PRIVATE
+        coreclr_static
+        gcinfo
+        System.IO.Compression.Native-Static
+        System.Globalization.Native-Static
+        System.Native-Static)
+
 endif(CLR_CMAKE_HOST_WIN32)
 
 if (CLR_CMAKE_HOST_APPLE)

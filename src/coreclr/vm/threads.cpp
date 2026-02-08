@@ -981,11 +981,13 @@ static void* s_barrierCopy = NULL;
 
 BYTE* GetWriteBarrierCodeLocation(VOID* barrier)
 {
+#if !defined(FEATURE_PORTABLE_HELPERS) && defined(FEATURE_USE_ASM_GC_WRITE_BARRIERS)  // rtgc patch  
     if (IsWriteBarrierCopyEnabled())
     {
         return (BYTE*)PINSTRToPCODE((TADDR)s_barrierCopy + ((TADDR)barrier - (TADDR)JIT_PatchedCodeStart));
     }
     else
+#endif
     {
         return (BYTE*)barrier;
     }
@@ -993,11 +995,13 @@ BYTE* GetWriteBarrierCodeLocation(VOID* barrier)
 
 BOOL IsIPInWriteBarrierCodeCopy(PCODE controlPc)
 {
+#if !defined(FEATURE_PORTABLE_HELPERS) && defined(FEATURE_USE_ASM_GC_WRITE_BARRIERS)     // rtgc patch
     if (IsWriteBarrierCopyEnabled())
     {
         return (s_barrierCopy <= (void*)controlPc && (void*)controlPc < ((BYTE*)s_barrierCopy + ((BYTE*)JIT_PatchedCodeLast - (BYTE*)JIT_PatchedCodeStart)));
     }
     else
+#endif
     {
         return FALSE;
     }
@@ -1005,10 +1009,14 @@ BOOL IsIPInWriteBarrierCodeCopy(PCODE controlPc)
 
 PCODE AdjustWriteBarrierIP(PCODE controlPc)
 {
+#if !defined(FEATURE_PORTABLE_HELPERS) && defined(FEATURE_USE_ASM_GC_WRITE_BARRIERS)     // rtgc patch
     _ASSERTE(IsIPInWriteBarrierCodeCopy(controlPc));
 
     // Pretend we were executing the barrier function at its original location so that the unwinder can unwind the frame
     return (PCODE)JIT_PatchedCodeStart + (controlPc - (PCODE)s_barrierCopy);
+#else 
+    throw "Not Supported in FEATURE_USE_ASM_GC_WRITE_BARRIERS";
+#endif
 }
 
 #ifdef TARGET_X86
@@ -1057,7 +1065,8 @@ void InitThreadManagerPerfMapData()
         GC_TRIGGERS;
     }
     CONTRACTL_END;
-#ifdef FEATURE_PERFMAP
+// rtgc patch
+#if defined(FEATURE_PERFMAP) &&  !defined(FEATURE_PORTABLE_HELPERS) && defined(FEATURE_USE_ASM_GC_WRITE_BARRIERS)     // rtgc patch
     if (IsWriteBarrierCopyEnabled())
     {
         size_t writeBarrierSize = (BYTE*)JIT_PatchedCodeLast - (BYTE*)JIT_PatchedCodeStart;
@@ -1078,7 +1087,7 @@ void InitThreadManager()
     }
     CONTRACTL_END;
 
-#ifndef FEATURE_PORTABLE_HELPERS
+#if !defined(FEATURE_PORTABLE_HELPERS) && defined(FEATURE_USE_ASM_GC_WRITE_BARRIERS)  // rtgc patch
     // All patched helpers should fit into one page.
     // If you hit this assert on retail build, there is most likely problem with BBT script.
     _ASSERTE_ALL_BUILDS((BYTE*)JIT_PatchedCodeLast - (BYTE*)JIT_PatchedCodeStart > (ptrdiff_t)0);

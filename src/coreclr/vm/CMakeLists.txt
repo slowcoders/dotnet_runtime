@@ -721,7 +721,7 @@ else()
             ${ARCH_SOURCES_DIR}/jithelpers_fastwritebarriers.S
             ${ARCH_SOURCES_DIR}/jithelpers_singleappdomain.S
             ${ARCH_SOURCES_DIR}/jithelpers_slow.S
-            ${ARCH_SOURCES_DIR}/patchedcode.S
+            # _rtgc_barrier ${ARCH_SOURCES_DIR}/patchedcode.S
             ${ARCH_SOURCES_DIR}/pinvokestubs.S
             ${ARCH_SOURCES_DIR}/redirectedhandledjitcase.S
             ${RUNTIME_DIR}/${ARCH_SOURCES_DIR}/StubDispatch.S

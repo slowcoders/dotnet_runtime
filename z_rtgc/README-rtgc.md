@@ -26,6 +26,18 @@
     coreclr_shutdown_2_ptr coreclr_shutdown2_func = coreclr_shutdown_2;
 #else
 ```
+
+### /Users/zeedhoon/slowcoders/dotnet/dotnet_runtime/src/coreclr/clrdefinitions.cmake: 187
+```sh
+# _rtgc add_definitions(-DFEATURE_USE_ASM_GC_WRITE_BARRIERS)
+```
+
+/Users/zeedhoon/slowcoders/dotnet/dotnet_runtime/src/coreclr/vm/CMakeLists.txt: 724
+```sh
+# _rtgc ${ARCH_SOURCES_DIR}/patchedcode.S
+```
+
+
 ### .vscode/launch.json
 ```js
 {

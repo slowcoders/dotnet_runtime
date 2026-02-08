@@ -5926,7 +5926,7 @@ bool IsIPInMarkedJitHelper(PCODE uControlPc)
 {
     LIMITED_METHOD_CONTRACT;
 
-#ifndef FEATURE_PORTABLE_HELPERS
+#if !defined(FEATURE_PORTABLE_HELPERS) && defined(FEATURE_USE_ASM_GC_WRITE_BARRIERS) // rtgc patch
     // compare the IP against the list of known possible AV locations in the write barrier helpers
     for (size_t i = 0; i < sizeof(writeBarrierAVLocations)/sizeof(writeBarrierAVLocations[0]); i++)
     {

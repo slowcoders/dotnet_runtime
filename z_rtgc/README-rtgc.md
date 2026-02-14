@@ -4,6 +4,14 @@
 - git clone  --depth=1024 https://9e70dd93abc19a3a7cf43b477a84d194ee09035a@github.com/slowcoders/dotnet_runtime.git
 
 
+### rosetta x86 brew 파일들 제거
+```sh
+arch -x86_64 /usr/local/bin/brew uninstall --force $(brew list)
+arch -x86_64 /bin/bash -c \
+"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+
+```
+
 ## patch sources to enable debugging on macosx arm64
 ### src/coreclr/hosts/corerun/CMakeLists.txt:78
 ```text

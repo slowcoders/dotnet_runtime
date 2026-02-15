@@ -87,18 +87,19 @@ FCDECL2(void, RhpByRefAssignRefArm64, Object **dst, Object *ref);
 volatile bool call_rhp_assign_ref = true;
 int cnt = 0;
 // EXTERN_C void F_CALL_CONV 
-FCIMPL3(void, RhpAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
+FCIMPL3(void*, RhpAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
     rtgc_InlineWriteBarrier(dst, ref);
+    return dst + 1;
 }
 FCIMPLEND
 
 // EXTERN_C void F_CALL_CONV 
-FCIMPL3(void, RhpCheckedAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
+FCIMPL3(void*, RhpCheckedAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
     if (((uint8_t*)dst < g_lowest_address) || ((uint8_t*)dst >= g_highest_address))
-        return;
-    rtgc_InlineWriteBarrier(dst, ref);
+        return dst + 1;
+    return RhpAssignRefArm64_rtgc(dst, ref, owner);
 }
 FCIMPLEND
 

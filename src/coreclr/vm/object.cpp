@@ -2025,3 +2025,10 @@ extern "C" void _rtgc_debug_trap()
 {
     throw "DebugBreak";
 }
+
+extern "C" void* RhpAssignRefArm64_rtgc_2(Object **dst, Object *ref, Object *owner)
+{
+    *dst = ref;
+    _rtgc_debug_trap();
+    return dst + 1;
+}

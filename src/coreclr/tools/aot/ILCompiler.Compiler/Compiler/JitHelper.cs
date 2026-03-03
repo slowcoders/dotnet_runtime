@@ -65,7 +65,7 @@ namespace ILCompiler
                 case ReadyToRunHelper.WriteBarrier:
                     mangledName = context.Target.Architecture switch
                     {
-                        TargetArchitecture.ARM64 => _rtgc ? "RhpAssignRefArm64_rtgc" : "RhpAssignRefArm64",
+                        TargetArchitecture.ARM64 => (_rtgc) ? "RhpAssignRefArm64_rtgc" : "RhpAssignRefArm64",
                         TargetArchitecture.LoongArch64 => "RhpAssignRefLoongArch64",
                         TargetArchitecture.RiscV64 => "RhpAssignRefRiscV64",
                         _ => "RhpAssignRef"

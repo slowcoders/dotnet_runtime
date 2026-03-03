@@ -76,6 +76,8 @@ https://github.com/dotnet/runtime/blob/main/docs/workflow/debugging/coreclr/debu
     ./eng/common/native/install-dependencies.sh
 
     # dlopen(libjitinterface_arm64) 오류 발생 시 clean 실행 필요!!
+    # !!!! 주의) WriteBarrier 변경 후에는 반드시 clean 이 필요하다.
+    #.     직전에 nativeaot 로 컴파일된 cs 파일들이 예전 barrier 에 링크된 상태이기 때문.
     ./build.sh --clean
 
     rm -rf artifacts/obj/coreclr/osx.arm64.Debug/jit

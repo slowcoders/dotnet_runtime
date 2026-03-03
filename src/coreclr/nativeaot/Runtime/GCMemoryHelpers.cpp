@@ -87,6 +87,14 @@ FCDECL2(void, RhpByRefAssignRefArm64, Object **dst, Object *ref);
 volatile bool call_rhp_assign_ref = true;
 int cnt = 0;
 // EXTERN_C void F_CALL_CONV 
+FCIMPL3(void*, RhpAssignRefArm64_rtgc_2, Object **dst, Object *ref, Object *owner)
+{
+    rtgc_InlineWriteBarrier(dst, ref);
+    return dst + 1;
+}
+FCIMPLEND
+
+
 FCIMPL3(void*, RhpAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
     rtgc_InlineWriteBarrier(dst, ref);
@@ -97,9 +105,12 @@ FCIMPLEND
 // EXTERN_C void F_CALL_CONV 
 FCIMPL3(void*, RhpCheckedAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
-    if (((uint8_t*)dst < g_lowest_address) || ((uint8_t*)dst >= g_highest_address))
+    if (((uint8_t*)dst < g_lowest_address) || ((uint8_t*)dst >= g_highest_address)) {
+        *dst = ref;
         return dst + 1;
-    return RhpAssignRefArm64_rtgc(dst, ref, owner);
+    }
+    rtgc_InlineWriteBarrier(dst, ref);
+    return dst + 1;
 }
 FCIMPLEND
 
@@ -110,9 +121,9 @@ struct byRef_Res {
 
 FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc, Object **dst, Object **src, Object *owner)
 {
-    rtgc_InlineWriteBarrier(dst, *src);
+    // rtgc_InlineWriteBarrier(dst, *src);
     byRef_Res res;
-    res.dst = (intptr_t)dst + sizeof(Object*);
+    res.dst = (intptr_t)RhpCheckedAssignRefArm64_rtgc(dst, *src, owner);
     res.src = (intptr_t)src + sizeof(Object*);
     return res;
 }

@@ -273,6 +273,16 @@ LEAF_END RhpCheckedAssignRefArm64, _TEXT
 LEAF_ENTRY RhpAssignRefArm64, _TEXT
 
     ALTERNATE_ENTRY RhpAssignRefAVLocation
+#if 0
+        mov     x0, x14
+        mov     x1, x15
+
+        stp x29, x30, [sp, #-16]! 
+        bl      C_FUNC(RhpAssignRefArm64_rtgc_2)
+        ldp x29, x30, [sp], #16 
+
+        mov     x14, x0                     ; x14 = dst
+#else
         stlr    x15, [x14]
 
         // b       C_FUNC(_rtgc_debug_trap)
@@ -280,6 +290,7 @@ LEAF_ENTRY RhpAssignRefArm64, _TEXT
         INSERT_UNCHECKED_WRITE_BARRIER_CORE x14, x15
 
         add     x14, x14, 8
+#endif
         ret
 
 LEAF_END RhpAssignRefArm64, _TEXT

@@ -80,6 +80,11 @@ FORCEINLINE void rtgc_InlineWriteBarrier(Object ** dst, Object * ref) {
 }
 
 
+
+struct byRef_Res {
+    intptr_t dst; intptr_t src;
+};
+
 FCDECL2(void, RhpAssignRef, Object **dst, Object *ref);
 FCDECL2(void, RhpCheckedAssignRef_rtgc_s, Object **dst, Object *ref);
 FCDECL2(void, RhpByRefAssignRefArm64, Object **dst, Object *ref);
@@ -87,43 +92,46 @@ FCDECL2(void, RhpByRefAssignRefArm64, Object **dst, Object *ref);
 volatile bool call_rhp_assign_ref = true;
 int cnt = 0;
 // EXTERN_C void F_CALL_CONV 
-FCIMPL3(void*, RhpAssignRefArm64_rtgc_2, Object **dst, Object *ref, Object *owner)
+FCIMPL3(byRef_Res, RhpAssignRefArm64_rtgc_2, Object **dst, Object *ref, Object *owner)
 {
     rtgc_InlineWriteBarrier(dst, ref);
-    return dst + 1;
+    byRef_Res res;
+    res.dst = (intptr_t)(dst + 1);
+    res.src = (intptr_t)ref;
+    return res;
 }
 FCIMPLEND
 
 
-FCIMPL3(void*, RhpAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
+FCIMPL3(byRef_Res, RhpAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
     rtgc_InlineWriteBarrier(dst, ref);
-    return dst + 1;
+    byRef_Res res;
+    res.dst = (intptr_t)(dst + 1);
+    res.src = (intptr_t)ref;
+    return res;
 }
 FCIMPLEND
 
 // EXTERN_C void F_CALL_CONV 
-FCIMPL3(void*, RhpCheckedAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
+FCIMPL3(byRef_Res, RhpCheckedAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {
     if (((uint8_t*)dst < g_lowest_address) || ((uint8_t*)dst >= g_highest_address)) {
         *dst = ref;
-        return dst + 1;
+    } else {
+        rtgc_InlineWriteBarrier(dst, ref);
     }
-    rtgc_InlineWriteBarrier(dst, ref);
-    return dst + 1;
+    byRef_Res res;
+    res.dst = (intptr_t)(dst + 1);
+    res.src = (intptr_t)ref;
+    return res;
 }
 FCIMPLEND
-
-// EXTERN_C void F_CALL_CONV 
-struct byRef_Res {
-    intptr_t dst; intptr_t src;
-};
 
 FCIMPL3(byRef_Res, RhpByRefAssignRefArm64_rtgc, Object **dst, Object **src, Object *owner)
 {
     // rtgc_InlineWriteBarrier(dst, *src);
-    byRef_Res res;
-    res.dst = (intptr_t)RhpCheckedAssignRefArm64_rtgc(dst, *src, owner);
+    byRef_Res res = RhpCheckedAssignRefArm64_rtgc(dst, *src, owner);
     res.src = (intptr_t)src + sizeof(Object*);
     return res;
 }

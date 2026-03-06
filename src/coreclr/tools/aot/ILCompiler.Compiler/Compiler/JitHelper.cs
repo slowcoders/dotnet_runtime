@@ -19,7 +19,7 @@ namespace ILCompiler
         {
             mangledName = null;
             methodDesc = null;
-            const bool _rtgc = true; // GetEntryPoint
+            const bool _rtgc = false; // GetEntryPoint
 
             switch (id)
             {

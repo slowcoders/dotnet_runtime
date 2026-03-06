@@ -704,7 +704,7 @@ void CodeGenInterface::genUpdateRegLife(const LclVarDsc* varDsc, bool isBorn, bo
 //
 regMaskTP Compiler::compHelperCallKillSet(CorInfoHelpFunc helper)
 {
-    const bool _rtgc = true; // compHelperCallKillSet
+    const bool _rtgc = false; // compHelperCallKillSet
     switch (helper)
     {
         // Most of the helpers are written in C++ and C# and we can't make

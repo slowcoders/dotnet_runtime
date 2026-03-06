@@ -122,6 +122,78 @@
 #endif
 
 2:
+#ifdef FEATURE_RTGC
+        stp     x0, x1, [sp, #-16]!
+        stp     x2, x3, [sp, #-16]!
+        stp     x4, x5, [sp, #-16]!
+        stp     x6, x7, [sp, #-16]!
+        stp     x8, x9, [sp, #-16]!
+        stp     x10, x11, [sp, #-16]!
+        stp     x12, x13, [sp, #-16]!
+        stp     x15, x16, [sp, #-16]!
+        stp     x17, x18, [sp, #-16]!
+
+        stp     x19, x20, [sp, #-16]!
+        stp     x21, x22, [sp, #-16]!
+        stp     x23, x24, [sp, #-16]!
+        stp     x25, x26, [sp, #-16]!
+        stp     x27, x28, [sp, #-16]!
+
+    stp     q0, q1, [sp, #-16]!
+    stp     q2, q3, [sp, #-16]!
+    stp     q4, q5, [sp, #-16]!
+    stp     q6, q7, [sp, #-16]!
+    stp     q16, q17, [sp, #-16]!
+    stp     q18, q19, [sp, #-16]!
+    stp     q20, q21, [sp, #-16]!
+    stp     q22, q23, [sp, #-16]!
+    stp     q24, q25, [sp, #-16]!
+    stp     q26, q27, [sp, #-16]!
+    stp     q28, q29, [sp, #-16]!
+    stp     q30, q31, [sp, #-16]!
+
+        stp x14, x15, [sp, #-16]!
+        mov     x0, x14
+        mov     x1, x15
+
+        stp x29, x30, [sp, #-16]! 
+        bl      C_FUNC(RhpAssignRefArm64_rtgc_2)
+        ldp x29, x30, [sp], #16 
+
+        //mov     x14, x0                     ; x14 = dst
+    ldp     x14, x15, [sp], #16
+    // add         x14, x14, 8
+
+    ldp     q30, q31, [sp], #16
+    ldp     q28, q29, [sp], #16
+    ldp     q26, q27, [sp], #16
+    ldp     q24, q25, [sp], #16
+    ldp     q22, q23, [sp], #16
+    ldp     q20, q21, [sp], #16
+    ldp     q18, q19, [sp], #16
+    ldp     q16, q17, [sp], #16
+    ldp     q6, q7, [sp], #16
+    ldp     q4, q5, [sp], #16
+    ldp     q2, q3, [sp], #16
+    ldp     q0, q1, [sp], #16
+
+
+        ldp     x27, x28, [sp], #16
+        ldp     x25, x26, [sp], #16
+        ldp     x23, x24, [sp], #16
+        ldp     x21, x22, [sp], #16        
+        ldp     x19, x20, [sp], #16        
+
+        ldp     x17, x18, [sp], #16
+        ldp     x15, x16, [sp], #16
+        ldp     x12, x13, [sp], #16
+        ldp     x10, x11, [sp], #16
+        ldp     x8, x9, [sp], #16
+        ldp     x6, x7, [sp], #16
+        ldp     x4, x5, [sp], #16
+        ldp     x2, x3, [sp], #16        
+        ldp     x0, x1, [sp], #16        
+#else
         // We can skip the card table write if the reference is to
         // an object not on the epehemeral segment.
         PREPARE_EXTERNAL_VAR_INDIRECT g_ephemeral_low,  x12
@@ -142,6 +214,7 @@
 
         mov     x12, 0xFF
         strb    w12, [x17]
+#endif
 
 #ifdef FEATURE_MANUALLY_MANAGED_CARD_BUNDLES
         // Check if we need to update the card bundle table
@@ -273,24 +346,12 @@ LEAF_END RhpCheckedAssignRefArm64, _TEXT
 LEAF_ENTRY RhpAssignRefArm64, _TEXT
 
     ALTERNATE_ENTRY RhpAssignRefAVLocation
-#if 0
-        mov     x0, x14
-        mov     x1, x15
-
-        stp x29, x30, [sp, #-16]! 
-        bl      C_FUNC(RhpAssignRefArm64_rtgc_2)
-        ldp x29, x30, [sp], #16 
-
-        mov     x14, x0                     ; x14 = dst
-#else
+#ifndef FEATURE_RTGC
         stlr    x15, [x14]
-
-        // b       C_FUNC(_rtgc_debug_trap)
-
+#endif
         INSERT_UNCHECKED_WRITE_BARRIER_CORE x14, x15
 
         add     x14, x14, 8
-#endif
         ret
 
 LEAF_END RhpAssignRefArm64, _TEXT

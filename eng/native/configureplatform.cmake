@@ -315,6 +315,9 @@ if(NOT DEFINED CLR_CMAKE_TARGET_ARCH OR CLR_CMAKE_TARGET_ARCH STREQUAL "" )
   endif()
 endif()
 
+# _rtgc_
+set(CLR_CMAKE_RTGC 1)
+
 # Set target architecture variables
 if (CLR_CMAKE_TARGET_ARCH STREQUAL x64)
     set(CLR_CMAKE_TARGET_ARCH_AMD64 1)

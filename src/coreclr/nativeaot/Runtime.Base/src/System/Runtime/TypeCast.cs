@@ -37,7 +37,7 @@ namespace System.Runtime
 
         private static CastCache s_castCache = new CastCache(InitialCacheSize, MaximumCacheSize);
 
-        private static bool _rtgc = true; // StelemRef
+        private static bool _rtgc;// = false; // StelemRef
 
         [Flags]
         internal enum AssignmentVariation

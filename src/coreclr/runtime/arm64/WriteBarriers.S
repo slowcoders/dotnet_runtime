@@ -103,7 +103,7 @@
         // On exit:
         //   x12,x17: trashed
         //
-        .macro INSERT_UNCHECKED_WRITE_BARRIER_CORE destReg, refReg
+        .macro INSERT_UNCHECKED_WRITE_BARRIER_CORE destReg, refReg, oldReg
 
         // Update the shadow copy of the heap with the same value just written to the same heap. (A no-op unless
         // we are in a debug build and write barrier checking has been enabled).
@@ -133,11 +133,17 @@
         stp     x15, x16, [sp, #-16]!
         stp     x17, x18, [sp, #-16]!
 
+        stp x29, x30, [sp, #-16]! 
+
         mov     x0, \destReg
         mov     x1, \refReg
+        .ifnb   \oldReg
+                mov     x2, \oldReg
+                bl      C_FUNC(RhpAssignRefArm64_rtgc_3)
+        .else
+                bl      C_FUNC(RhpAssignRefArm64_rtgc_2)
+        .endif
 
-        stp x29, x30, [sp, #-16]! 
-        bl      C_FUNC(RhpAssignRefArm64_rtgc_2)
         ldp x29, x30, [sp], #16 
 
         ldp     x17, x18, [sp], #16
@@ -195,7 +201,7 @@
         // On exit:
         //   x12, x17:   trashed
         //
-        .macro INSERT_CHECKED_WRITE_BARRIER_CORE destReg, refReg
+        .macro INSERT_CHECKED_WRITE_BARRIER_CORE destReg, refReg, oldReg
 
         // The "check" of this checked write barrier - is destReg
         // within the heap? if no, early out.
@@ -210,7 +216,7 @@
         ccmp    \destReg, x12, #0x2, hs
         bhs     0f
 
-        INSERT_UNCHECKED_WRITE_BARRIER_CORE \destReg, \refReg
+        INSERT_UNCHECKED_WRITE_BARRIER_CORE \destReg, \refReg, \oldReg
 
 0:
         // Exit label
@@ -368,7 +374,7 @@ LOCAL_LABEL(DoCardsCmpXchg):
         // The following barrier code takes the destination in x0 and the value in x1 so the arguments are
         // already correctly set up.
 
-        INSERT_CHECKED_WRITE_BARRIER_CORE x0, x1
+        INSERT_CHECKED_WRITE_BARRIER_CORE x0, x1, x2
 
 LOCAL_LABEL(CmpXchgNoUpdate):
         // x10 still contains the original value.
@@ -425,7 +431,7 @@ LOCAL_LABEL(DoCardsXchg):
         // The following barrier code takes the destination in x0 and the value in x1 so the arguments are
         // already correctly set up.
 
-        INSERT_CHECKED_WRITE_BARRIER_CORE x0, x1
+        INSERT_CHECKED_WRITE_BARRIER_CORE x0, x1, x10 
 
         // x10 still contains the original value.
         mov     x0, x10

@@ -101,6 +101,12 @@ FCIMPL3(byRef_Res, RhpAssignRefArm64_rtgc_2, Object **dst, Object *ref, Object *
 }
 FCIMPLEND
 
+FCIMPL3(void, RhpAssignRefArm64_rtgc_3, Object **dst, Object *ref, Object *old_ref)
+{
+    InlineWriteBarrier(dst, ref);
+}
+FCIMPLEND
+
 
 FCIMPL3(byRef_Res, RhpAssignRefArm64_rtgc, Object **dst, Object *ref, Object *owner)
 {

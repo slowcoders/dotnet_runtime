@@ -90,14 +90,11 @@ FCDECL2(void, RhpByRefAssignRefArm64, Object **dst, Object *ref);
 
 volatile bool call_rhp_assign_ref = true;
 int cnt = 0;
-// EXTERN_C void F_CALL_CONV 
-FCIMPL3(byRef_Res, RhpAssignRefArm64_rtgc_2, Object **dst, Object *ref, Object *owner)
+
+FCIMPL3(void, RhpAssignRefArm64_rtgc_2, Object **dst, Object *ref, Object *owner)
 {
-    rtgc_InlineWriteBarrier(dst, ref);
-    byRef_Res res;
-    res.dst = (intptr_t)(dst + 1);
-    res.src = (intptr_t)ref;
-    return res;
+    *dst = ref;
+    InlineWriteBarrier(dst, ref);
 }
 FCIMPLEND
 

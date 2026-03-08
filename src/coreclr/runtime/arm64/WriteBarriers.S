@@ -301,7 +301,9 @@ LEAF_END RhpCheckedAssignRefArm64, _TEXT
 LEAF_ENTRY RhpAssignRefArm64, _TEXT
 
     ALTERNATE_ENTRY RhpAssignRefAVLocation
-#ifndef FEATURE_RTGC
+#ifdef FEATURE_RTGC
+        ldr    x12, [x14] // -> just for null_check! (barrier 코드 영역 내 검사!)
+#else
         stlr    x15, [x14]
 #endif
         INSERT_UNCHECKED_WRITE_BARRIER_CORE x14, x15

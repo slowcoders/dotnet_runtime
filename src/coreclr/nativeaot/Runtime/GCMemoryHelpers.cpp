@@ -86,7 +86,6 @@ struct byRef_Res {
 };
 
 FCDECL2(void, RhpAssignRef, Object **dst, Object *ref);
-FCDECL2(void, RhpCheckedAssignRef_rtgc_s, Object **dst, Object *ref);
 FCDECL2(void, RhpByRefAssignRefArm64, Object **dst, Object *ref);
 
 volatile bool call_rhp_assign_ref = true;

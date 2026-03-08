@@ -129,64 +129,20 @@
         stp     x6, x7, [sp, #-16]!
         stp     x8, x9, [sp, #-16]!
         stp     x10, x11, [sp, #-16]!
-        stp     x12, x13, [sp, #-16]!
+        stp     x13, x14, [sp, #-16]!
         stp     x15, x16, [sp, #-16]!
         stp     x17, x18, [sp, #-16]!
 
-        stp     x19, x20, [sp, #-16]!
-        stp     x21, x22, [sp, #-16]!
-        stp     x23, x24, [sp, #-16]!
-        stp     x25, x26, [sp, #-16]!
-        stp     x27, x28, [sp, #-16]!
-
-    stp     q0, q1, [sp, #-16]!
-    stp     q2, q3, [sp, #-16]!
-    stp     q4, q5, [sp, #-16]!
-    stp     q6, q7, [sp, #-16]!
-    stp     q16, q17, [sp, #-16]!
-    stp     q18, q19, [sp, #-16]!
-    stp     q20, q21, [sp, #-16]!
-    stp     q22, q23, [sp, #-16]!
-    stp     q24, q25, [sp, #-16]!
-    stp     q26, q27, [sp, #-16]!
-    stp     q28, q29, [sp, #-16]!
-    stp     q30, q31, [sp, #-16]!
-
-        stp x14, x15, [sp, #-16]!
-        mov     x0, x14
-        mov     x1, x15
+        mov     x0, \destReg
+        mov     x1, \refReg
 
         stp x29, x30, [sp, #-16]! 
         bl      C_FUNC(RhpAssignRefArm64_rtgc_2)
         ldp x29, x30, [sp], #16 
 
-        //mov     x14, x0                     ; x14 = dst
-    ldp     x14, x15, [sp], #16
-    // add         x14, x14, 8
-
-    ldp     q30, q31, [sp], #16
-    ldp     q28, q29, [sp], #16
-    ldp     q26, q27, [sp], #16
-    ldp     q24, q25, [sp], #16
-    ldp     q22, q23, [sp], #16
-    ldp     q20, q21, [sp], #16
-    ldp     q18, q19, [sp], #16
-    ldp     q16, q17, [sp], #16
-    ldp     q6, q7, [sp], #16
-    ldp     q4, q5, [sp], #16
-    ldp     q2, q3, [sp], #16
-    ldp     q0, q1, [sp], #16
-
-
-        ldp     x27, x28, [sp], #16
-        ldp     x25, x26, [sp], #16
-        ldp     x23, x24, [sp], #16
-        ldp     x21, x22, [sp], #16        
-        ldp     x19, x20, [sp], #16        
-
         ldp     x17, x18, [sp], #16
         ldp     x15, x16, [sp], #16
-        ldp     x12, x13, [sp], #16
+        ldp     x13, x14, [sp], #16
         ldp     x10, x11, [sp], #16
         ldp     x8, x9, [sp], #16
         ldp     x6, x7, [sp], #16
@@ -284,13 +240,6 @@ LEAF_ENTRY RhpByRefAssignRefArm64, _TEXT
         b       C_FUNC(RhpCheckedAssignRefArm64)
 
 LEAF_END RhpByRefAssignRefArm64, _TEXT
-
-LEAF_ENTRY RhpCheckedAssignRef_rtgc_s, _TEXT
-        mov     x14, x0                     ; x14 = dst
-        mov     x15, x1                     ; x15 = val
-        b       C_FUNC(RhpCheckedAssignRefArm64)
-
-LEAF_END RhpCheckedAssignRef_rtgc_s, _TEXT
 
 
 // JIT_CheckedWriteBarrier(Object** dst, Object* src)
@@ -397,9 +346,9 @@ LEAF_END RhpAssignRef, _TEXT
 #endif
 
         mov    x10, x2
-        casal  x10, x1, [x0]                  // exchange
+        casal  x10, x1, [x0]                  // cmpxhg   if ([x0] == x10) { [x0] -> x10, x1 -> [x0]}
         cmp    x2, x10
-        bne    LOCAL_LABEL(CmpXchgNoUpdate)
+        bne    LOCAL_LABEL(CmpXchgNoUpdate)     // not changed
 
 #ifndef LSE_INSTRUCTIONS_ENABLED_BY_DEFAULT
         b      LOCAL_LABEL(DoCardsCmpXchg)
@@ -458,7 +407,7 @@ LOCAL_LABEL(NoBarrierCmpXchg):
         tbz    w16, #ARM64_ATOMICS_FEATURE_FLAG_BIT, LOCAL_LABEL(ExchangeRetry)
 #endif
 
-        swpal  x1, x10, [x0]                   // exchange
+        swpal  x1, x10, [x0]                   // exchange  [x0] -> x10, x1 -> [x0]
 
 #ifndef LSE_INSTRUCTIONS_ENABLED_BY_DEFAULT
         b      LOCAL_LABEL(DoCardsXchg)

@@ -24300,6 +24300,7 @@ void gc_heap::garbage_collect_pm_full_gc()
     gc1();
 }
 
+// _rtgc gc_heap::garbage_collect 
 void gc_heap::garbage_collect (int n)
 {
     gc_pause_mode saved_settings_pause_mode = settings.pause_mode;
@@ -42195,6 +42196,7 @@ bool gc_heap::find_next_chunk(card_marking_enumerator& card_mark_enumerator, hea
 }
 #endif // FEATURE_CARD_MARKING_STEALING
 
+// _rtgc gc
 void gc_heap::mark_through_cards_for_segments (card_fn fn, BOOL relocating CARD_MARKING_STEALING_ARG(gc_heap* hpt))
 {
 #ifdef BACKGROUND_GC

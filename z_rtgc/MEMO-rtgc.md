@@ -98,3 +98,12 @@ mark_object_simple1.cpp
     3. Ephemeral card table의 빈번한 초기화로 인한 영향 최소화
 이는 GC의 정확성과 단순성 사이의 타협점입니다. Ephemeral 세대의 Write Barrier는 상대적으로 저비용이므로 생략하지 않습니다.
 
+
+
+### 메모리 Segment
+1. Gen0, 1, 2 및 POH, SOH 를 담는 단위
+2. Server GC 시에는 CPU 코어 개수만큼 Segment 생성됨.
+3. g_lowest_address 는 모든 가장 하단 segment 의 시작 주소값
+4. 각 Segment 의 가장 하단부터 Gen2, Gen1, Gen0 순으로 메모리 할당.
+   - 각 Gen 영역의 크기 변경될 수 있음.
+   - LOH(Large Object Heap), POH(Pinned Object Heap) 은 Gen2 영역의 앞 또는 중간, 뒤에 배치될 수 있다.

@@ -302,7 +302,7 @@ LEAF_ENTRY RhpAssignRefArm64, _TEXT
 
     ALTERNATE_ENTRY RhpAssignRefAVLocation
 #ifdef FEATURE_RTGC
-        ldr    x12, [x14] // -> just for null_check! (barrier 코드 영역 내 검사!)
+        ldr     x12, [x14] // -> just for null_check! (barrier 코드 영역 내 검사!)
 #else
         stlr    x15, [x14]
 #endif

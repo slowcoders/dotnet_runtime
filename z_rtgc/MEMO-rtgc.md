@@ -1,3 +1,5 @@
+[garbage-collect.md](../docs/design/coreclr/botr/garbage-collection.md)
+
 ### Hints
 - SetObjectReferenceUnchecked
 - ErectWriteBarrier → gchelpers.cpp : 기본 WriteBarrier. 실제 사용 시엔 Assembly??<br>
@@ -107,3 +109,13 @@ mark_object_simple1.cpp
 4. 각 Segment 의 가장 하단부터 Gen2, Gen1, Gen0 순으로 메모리 할당.
    - 각 Gen 영역의 크기 변경될 수 있음.
    - LOH(Large Object Heap), POH(Pinned Object Heap) 은 Gen2 영역의 앞 또는 중간, 뒤에 배치될 수 있다.
+
+
+### brick: heap 을 2~4k 단위로 나눈 단위.
+#define brick_size ((size_t)4096)  // 64비트에서 4KB
+size_t gc_heap::brick_of (uint8_t* add) {
+    return (size_t)(add - lowest_address) / brick_size;
+}
+
+### plug: 메모리 힙에서 연속된 할당된 객체들의 그룹. 객체들이 연속적으로 배치된 메모리 블록.
+GC compaction(압축) 단계에서 객체를 이동시키는 단위. 살아남은 객체들을 새로운 위치로 복사할 때 plug 단위로 처리한다.

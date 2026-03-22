@@ -93,7 +93,7 @@ int cnt = 0;
 
 FCIMPL3(void, RhpAssignRefArm64_rtgc_2, Object **dst, Object *ref, Object *owner)
 {
-#ifdef FEATURE_RTGC_BARRIER
+#if false // def FEATURE_RTGC_BARRIER
     ASSERT(((uint8_t*)dst >= g_lowest_address) && ((uint8_t*)dst < g_highest_address))
 
     bool is_young_ref = (((uint8_t*)ref >= g_ephemeral_low) && ((uint8_t*)ref < g_ephemeral_high));

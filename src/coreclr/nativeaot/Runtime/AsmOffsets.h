@@ -20,9 +20,13 @@
 // NOTE: the values MUST be in hex notation WITHOUT the 0x prefix
 
 //        32-bit,64-bit, constant symbol
+#ifdef FEATURE_RTGC_BARRIER
+ASM_CONST(    40,    40, CLUMP_SIZE)
+ASM_CONST(     6,     6, LOG2_CLUMP_SIZE)
+#else
 ASM_CONST(   400,   800, CLUMP_SIZE)
 ASM_CONST(     a,     b, LOG2_CLUMP_SIZE)
-
+#endif
 //        32-bit,64-bit, class, member
 ASM_OFFSET(    0,     0, Object, m_pEEType)
 

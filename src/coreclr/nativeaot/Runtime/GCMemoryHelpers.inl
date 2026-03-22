@@ -8,14 +8,18 @@
 //
 
 // A 'clump' is defined as the size of memory covered by 1 byte in the card table.
-#ifdef HOST_64BIT
-#define CLUMP_SIZE 0x800
-#define LOG2_CLUMP_SIZE 11
+#ifdef FEATURE_RTGC_BARRIER
+    #define CLUMP_SIZE 0x40
+    #define LOG2_CLUMP_SIZE 6
 #else
-#define CLUMP_SIZE 0x400
-#define LOG2_CLUMP_SIZE 10
+    #ifdef HOST_64BIT
+    #define CLUMP_SIZE 0x800
+    #define LOG2_CLUMP_SIZE 11
+    #else
+    #define CLUMP_SIZE 0x400
+    #define LOG2_CLUMP_SIZE 10
+    #endif
 #endif
-
 // Global data cells exported by the GC.
 extern "C" unsigned char* g_ephemeral_low;
 extern "C" unsigned char* g_ephemeral_high;

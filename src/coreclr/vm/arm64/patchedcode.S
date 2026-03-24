@@ -302,7 +302,11 @@ LOCAL_LABEL(WriteWatchForGCHeapEnd\@):
     movz w15, 1
     lsl w17, w15, w17  // w17 = 1 << (LHS >> 8 && 7)
     ldr  x12, JIT_WriteBarrier_Offset_CardTable + FIXUP_LABEL(\start)
+#ifdef FEATURE_RTGC_BARRIER
+    add  x15, x12, x14, lsr #6
+#else
     add  x15, x12, x14, lsr #11
+#endif
     ldrb w12, [x15]  // w12 = [(LHS >> 11) + g_card_table]
     tst  w12, w17
     bne  LOCAL_LABEL(\exit)
@@ -316,7 +320,11 @@ LOCAL_LABEL(WriteWatchForGCHeapEnd\@):
 .macro WRITE_BARRIER_CHECK_CARD_TABLE_STUB start, exit
     // Check if we need to update the card table
     ldr  x12, JIT_WriteBarrier_Offset_CardTable + FIXUP_LABEL(\start)
+#ifdef FEATURE_RTGC_BARRIER
+    add  x15, x12, x14, lsr #6
+#else
     add  x15, x12, x14, lsr #11
+#endif
     ldrb w12, [x15]  // w12 = [(RHS >> 11) + g_card_table]
     cmp  x12, 0xFF
     beq  LOCAL_LABEL(\exit)

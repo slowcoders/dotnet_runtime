@@ -26,7 +26,10 @@ extern "C" unsigned char* g_ephemeral_high;
 extern "C" unsigned char* g_lowest_address;
 extern "C" unsigned char* g_highest_address;
 
-#if defined(HOST_64BIT)
+#ifdef FEATURE_RTGC_BARRIER
+static const int card_byte_shift = LOG2_CLUMP_SIZE;
+static const int card_bundle_byte_shift = LOG2_CLUMP_SIZE + 10;
+#elif defined(HOST_64BIT)
 static const int card_byte_shift = 11;
 static const int card_bundle_byte_shift = 21;
 #else

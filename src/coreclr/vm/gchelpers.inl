@@ -18,7 +18,10 @@
 //
 //========================================================================
 
-#if defined(HOST_64BIT)
+#ifdef FEATURE_RTGC_BARRIER
+    static const int card_byte_shift        = 6;
+    static const int card_bundle_byte_shift = 6 + 10;
+#elif defined(HOST_64BIT)
     static const int card_byte_shift        = 11;
     static const int card_bundle_byte_shift = 21;
 #else

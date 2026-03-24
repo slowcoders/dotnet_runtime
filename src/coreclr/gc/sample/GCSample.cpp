@@ -83,7 +83,9 @@ Object * AllocateObject(MethodTable * pMT)
     return pObject;
 }
 
-#if defined(HOST_64BIT)
+#ifdef FEATURE_RTGC_BARRRIER
+#define card_byte_shift     6
+#elif defined(HOST_64BIT)
 // Card byte shift is different on 64bit.
 #define card_byte_shift     11
 #else

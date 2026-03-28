@@ -360,7 +360,7 @@ void ThreadQueue::EnumerateThreads(SyncBlock *psb, FP_TQ_THREAD_ENUMERATION_CALL
 //
 // ***************************************************************************
 
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
 #define card_size (64*4/32)
 #else
 #define card_size 32

@@ -6748,7 +6748,7 @@ dynamic_data* gc_heap::dynamic_data_of (int gen_number)
     return &dynamic_data_table[gen_number];
 }
 
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
 #define GC_PAGE_SIZE (64*4)
 #else
 #define GC_PAGE_SIZE 0x1000
@@ -6759,7 +6759,7 @@ dynamic_data* gc_heap::dynamic_data_of (int gen_number)
 // The value of card_size is determined empirically according to the average size of an object
 // In the code we also rely on the assumption that one card_table entry (uint32_t) covers an entire os page
 //
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
 #define card_size ((size_t)(GC_PAGE_SIZE/card_word_width))
 #elif defined (HOST_64BIT)
 #define card_size ((size_t)(2*GC_PAGE_SIZE/card_word_width))

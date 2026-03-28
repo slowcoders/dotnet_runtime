@@ -8551,7 +8551,7 @@ void gc_heap::make_c_mark_list (uint8_t** arr)
 static const size_t card_bundle_word_width = 32;
 
 // How do we express the fact that 32 bits (card_word_width) is one uint32_t?
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
 static const size_t card_bundle_size = (size_t)(0x1000/*rtgc*/ / (sizeof(uint32_t)*card_bundle_word_width));
 #else
 static const size_t card_bundle_size = (size_t)(GC_PAGE_SIZE / (sizeof(uint32_t)*card_bundle_word_width));

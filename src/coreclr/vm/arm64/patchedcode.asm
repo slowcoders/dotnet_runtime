@@ -265,7 +265,7 @@ WriteWatchForGCHeapEnd$name
             movz w15, 1
             lsl w17, w15, w17  ; w17 = 1 << (LHS >> 8 && 7)
             ldr  x12, JIT_WriteBarrier_Offset_CardTable + start$name
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
             add  x15, x12, x14, lsr #6
 #else
             add  x15, x12, x14, lsr #11
@@ -284,7 +284,7 @@ WriteWatchForGCHeapEnd$name
         WRITE_BARRIER_CHECK_CARD_TABLE_STUB $name
         ; Check if we need to update the card table
             ldr  x12, JIT_WriteBarrier_Offset_CardTable + start$name
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
             add  x15, x12, x14, lsr #6
 #else
             add  x15, x12, x14, lsr #11

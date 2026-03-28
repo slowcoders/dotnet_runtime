@@ -20,7 +20,7 @@
 // NOTE: the values MUST be in hex notation WITHOUT the 0x prefix
 
 //        32-bit,64-bit, constant symbol
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
 ASM_CONST(    40,    40, CLUMP_SIZE)
 ASM_CONST(     6,     6, LOG2_CLUMP_SIZE)
 #else

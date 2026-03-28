@@ -18,7 +18,7 @@
 //
 //========================================================================
 
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
     static const int card_byte_shift        = 6;
     static const int card_bundle_byte_shift = 6 + 10;
 #elif defined(HOST_64BIT)

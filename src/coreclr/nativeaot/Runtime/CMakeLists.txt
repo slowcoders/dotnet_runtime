@@ -258,7 +258,7 @@ if (NOT CLR_CMAKE_TARGET_ARCH_WASM)
 endif()
 
 if (CLR_CMAKE_RTGC_BARRIER)
-  add_definitions(-DFEATURE_RTGC_BARRIER)
+  add_definitions(-DFEATURE_RTGC_LAZY_RC_INCREMENT)
   add_definitions(-DFEATURE_RTGC)
 elseif (CLR_CMAKE_RTGC)
   add_definitions(-DFEATURE_RTGC)

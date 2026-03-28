@@ -138,7 +138,7 @@ INVALIDGCVALUE  EQU 0xCCCCCCCD
 
         ;; Set this object's card, if it hasn't already been set.
         PREPARE_EXTERNAL_VAR_INDIRECT g_card_table, x12
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
         add     x17, x12, $destReg lsr #6
 #else        
         add     x17, x12, $destReg lsr #11
@@ -155,7 +155,7 @@ INVALIDGCVALUE  EQU 0xCCCCCCCD
 #ifdef FEATURE_MANUALLY_MANAGED_CARD_BUNDLES
         // Check if we need to update the card bundle table
         PREPARE_EXTERNAL_VAR_INDIRECT g_card_bundle_table, x12
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
         add     x17, x12, $destReg, lsr #16
 #else        
         add     x17, x12, $destReg, lsr #21

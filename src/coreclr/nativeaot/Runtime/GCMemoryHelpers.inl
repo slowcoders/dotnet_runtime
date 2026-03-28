@@ -8,7 +8,7 @@
 //
 
 // A 'clump' is defined as the size of memory covered by 1 byte in the card table.
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
     #define CLUMP_SIZE 0x40
     #define LOG2_CLUMP_SIZE 6
 #else
@@ -26,7 +26,7 @@ extern "C" unsigned char* g_ephemeral_high;
 extern "C" unsigned char* g_lowest_address;
 extern "C" unsigned char* g_highest_address;
 
-#ifdef FEATURE_RTGC_BARRIER
+#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
 static const int card_byte_shift = LOG2_CLUMP_SIZE;
 static const int card_bundle_byte_shift = LOG2_CLUMP_SIZE + 10;
 #elif defined(HOST_64BIT)

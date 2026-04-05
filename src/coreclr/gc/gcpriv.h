@@ -1519,6 +1519,9 @@ float median_of_3 (float a, float b, float c);
 class gc_heap
 {
     friend class GCHeap;
+#ifdef FEATURE_RTGC        
+    friend class rtgc;
+#endif
 #ifdef FEATURE_PREMORTEM_FINALIZATION
     friend class CFinalize;
 #endif // FEATURE_PREMORTEM_FINALIZATION
@@ -5673,6 +5676,7 @@ public:
 #ifdef FEATURE_BASICFREEZE
     PER_HEAP_ISOLATED_FIELD_MAINTAINED sorted_table* seg_table;
 #endif //FEATURE_BASICFREEZE
+
 }; // class gc_heap
 
 #ifdef FEATURE_PREMORTEM_FINALIZATION

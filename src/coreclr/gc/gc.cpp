@@ -67,6 +67,11 @@ namespace WKS {
 #include "gcimpl.h"
 #include "gcpriv.h"
 
+#ifdef FEATURE_RTGC        
+#define g_ephemeral_high  gc_heap::ephemeral_high
+#include "rtgc.h"
+#endif
+
 #ifdef DACCESS_COMPILE
 #error this source file should not be compiled with DACCESS_COMPILE!
 #endif //DACCESS_COMPILE
@@ -22606,6 +22611,10 @@ void gc_heap::gc1()
         }
 #endif //USE_REGIONS
 
+#ifdef FEATURE_RTGC
+        // _rtgc. disabled BACKGROUND_GC temporarily
+        ASSERT(!settings.concurrent);
+#endif
 #ifdef BACKGROUND_GC
         if (settings.concurrent)
         {
@@ -24468,6 +24477,10 @@ void gc_heap::garbage_collect (int n)
             (should_do_blocking_collection == FALSE) &&
             gc_can_use_concurrent &&
             !temp_disable_concurrent_p &&
+#ifdef FEATURE_RTGC
+            // _rtgc. disable BACKGROUND_GC (temporarily)
+            false &&
+#endif            
             ((settings.pause_mode == pause_interactive) || (settings.pause_mode == pause_sustained_low_latency)))
         {
             keep_bgc_threads_p = TRUE;
@@ -36351,6 +36364,15 @@ void gc_heap::relocate_address (uint8_t** pold_address THREAD_NUMBER_DCL)
         }
 
         dprintf (4, (ThreadStressLog::gcRelocateReferenceMsg(), pold_address, old_address, new_address));
+
+#ifdef FEATURE_RTGC        
+        // _rtgc promotion. init rc.
+        if (rtgc::is_in_old_heap(pold_address, ephemeral_high)) {
+             if (!rtgc::is_in_old_heap(old_address, ephemeral_high) && rtgc::is_in_old_heap(new_address, ephemeral_high)) {
+                rtgc::increase_rc(old_address);       
+             }
+        }
+#endif
         *pold_address = new_address;
         return;
     }
@@ -37320,6 +37342,7 @@ void gc_heap::relocate_phase (int condemned_gen_number,
 #endif // MULTIPLE_HEAPS && FEATURE_CARD_MARKING_STEALING
         {
             dprintf (3, ("Relocating cross generation pointers on heap %d", heap_number));
+            // _rtgc relocation. adjust pointer to relocated location
             mark_through_cards_for_segments(&gc_heap::relocate_address, TRUE THIS_ARG);
             verify_pins_with_post_plug_info("after reloc cards");
 #if defined(MULTIPLE_HEAPS) && defined(FEATURE_CARD_MARKING_STEALING)
@@ -50037,6 +50060,17 @@ bool GCHeap::IsHeapPointer (void* vpObject, bool small_heap_only)
 void GCHeap::Promote(Object** ppObject, ScanContext* sc, uint32_t flags)
 {
     THREAD_NUMBER_FROM_CONTEXT;
+#ifdef FEATURE_RTGC
+    ASSERT(((GCHeap*)nullptr)->GCHeap::IsEphemeral((Object*)(void*)ppObject) || (void*)ppObject > g_gc_highest_address || (void*)ppObject < g_gc_lowest_address);
+    {
+        gc_heap* hp = gc_heap::heap_of((uint8_t*)ppObject);
+        if (hp != NULL) {
+            ASSERT(hp->gc_low  <= hp->ephemeral_low);
+            ASSERT(hp->gc_high >= hp->ephemeral_high);
+        }
+    }
+#endif
+
 #ifndef MULTIPLE_HEAPS
     const int thread = 0;
 #endif //!MULTIPLE_HEAPS

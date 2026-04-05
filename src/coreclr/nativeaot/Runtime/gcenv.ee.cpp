@@ -112,6 +112,7 @@ void GCToEEInterface::GcScanRoots(ScanFunc* fn, int condemned, int max_gen, Scan
             }
 
             STRESS_LOG1(LF_GC | LF_GCROOTS, LL_INFO100, "{ Scanning Thread's %p thread statics root. \n", pThread);
+            // _rtgc mark roots
             EnumGcRef(pThread->GetThreadStaticStorage(), GCRK_Object, fn, sc);
 
             STRESS_LOG1(LF_GC | LF_GCROOTS, LL_INFO100, "{ Starting scan of Thread %p\n", pThread);

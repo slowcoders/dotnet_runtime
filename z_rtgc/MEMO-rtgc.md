@@ -119,3 +119,17 @@ size_t gc_heap::brick_of (uint8_t* add) {
 
 ### plug: 메모리 힙에서 연속된 할당된 객체들의 그룹. 객체들이 연속적으로 배치된 메모리 블록.
 GC compaction(압축) 단계에서 객체를 이동시키는 단위. 살아남은 객체들을 새로운 위치로 복사할 때 plug 단위로 처리한다.
+
+
+
+
+Failed test: OutOfProcessTest::nativeaot/SmokeTests/UnitTests/UnitTests/UnitTests.cmd (nativeaot/SmokeTests/UnitTests/UnitTests/UnitTests.cmd) (nativeaot.nativeaot)
+Process terminated. Assertion failed.
+A QueueUserWorkItemCallback was never called!
+   at System.Diagnostics.DebugProvider.Fail(String, String) + 0x50
+   at System.Diagnostics.Debug.Fail(String, String) + 0x5c
+   at System.Diagnostics.Debug.Assert(Boolean, String, String) + 0x48
+   at System.Diagnostics.Debug.Assert(Boolean, String) + 0x2c
+   at System.Threading.QueueUserWorkItemCallbackBase.Finalize() + 0x34
+   at System.Runtime.__Finalizer.DrainQueue() + 0xb8
+   at System.Runtime.__Finalizer.ProcessFinalizers() + 0x6c

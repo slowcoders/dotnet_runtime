@@ -10,6 +10,7 @@
 #include "PalLimitedContext.h"
 #include "CommonMacros.inl"
 #include "GCMemoryHelpers.inl"
+#include <atomic>
 
 // This function clears a piece of memory in a GC safe way.
 // Object-aligned memory is zeroed with no smaller than pointer-size granularity.
@@ -73,10 +74,52 @@ FCIMPLEND
 // ***********************************************
 // --- RTGC brrriers ---
 //
+#include "rtgc.h"
 
-FORCEINLINE void rtgc_InlineWriteBarrier(Object ** dst, Object * ref) {
-    *dst = ref;
+template < bool write_ref = true >  
+void rtgc_InlineWriteBarrier(Object ** dst, Object * ref, Object* old_ref = nullptr) {
+#ifdef FEATURE_RTGC    
+    if (!rtgc::is_in_old_heap(dst, g_ephemeral_high)) {
+#else
+    if (true) {
+#endif
+        *dst = ref;
+        InlineWriteBarrier(dst, ref);
+        return;
+    }
+
+
+#if 0 // def FEATURE_RTGC_LAZY_RC_INCREMENT
+    if (write_ref) {
+        std::atomic<Object*>* p = reinterpret_cast<std::atomic<Object*>*>(dst);
+        old_ref = p->exchange(ref, std::memory_order_seq_cst);
+    } 
+
+    ASSERT(((uint8_t*)dst >= g_lowest_address) && ((uint8_t*)dst < g_highest_address))
+    bool is_young_ref = (((uint8_t*)ref >= g_ephemeral_low) && ((uint8_t*)ref < g_ephemeral_high));
+
+    if (is_young_ref)
+    {
+        // volatile is used here to prevent fetch of g_card_table from being reordered
+        // with g_lowest/highest_address check above. See comment in code:gc_heap::grow_brick_card_tables.
+        uint8_t* pCardByte = (uint8_t *)VolatileLoadWithoutBarrier(&g_card_table) + ((size_t)dst >> LOG2_CLUMP_SIZE);
+        if (*pCardByte != 0xFF)
+            *pCardByte = 0xFF;
+    }
+#else
+
+    if (rtgc::is_in_old_heap(ref, g_ephemeral_high)) {
+        rtgc::increase_rc(ref);       
+    }
+    if (write_ref) {
+        std::atomic<Object*>* p = reinterpret_cast<std::atomic<Object*>*>(dst);
+        old_ref = p->exchange(ref, std::memory_order_seq_cst);
+    } 
+    if (rtgc::is_in_old_heap(old_ref, g_ephemeral_high)) {
+        rtgc::decrease_rc(old_ref);       
+    }
     InlineWriteBarrier(dst, ref);
+#endif
 }
 
 
@@ -93,30 +136,13 @@ int cnt = 0;
 
 FCIMPL3(void, RhpAssignRefArm64_rtgc_2, Object **dst, Object *ref, Object *owner)
 {
-#ifdef FEATURE_RTGC_LAZY_RC_INCREMENT
-    *dst = ref;
-
-    ASSERT(((uint8_t*)dst >= g_lowest_address) && ((uint8_t*)dst < g_highest_address))
-    bool is_young_ref = (((uint8_t*)ref >= g_ephemeral_low) && ((uint8_t*)ref < g_ephemeral_high));
-
-    if (is_young_ref)
-    {
-        // volatile is used here to prevent fetch of g_card_table from being reordered
-        // with g_lowest/highest_address check above. See comment in code:gc_heap::grow_brick_card_tables.
-        uint8_t* pCardByte = (uint8_t *)VolatileLoadWithoutBarrier(&g_card_table) + ((size_t)dst >> LOG2_CLUMP_SIZE);
-        if (*pCardByte != 0xFF)
-            *pCardByte = 0xFF;
-    }
-#else
-    *dst = ref;
-    InlineWriteBarrier(dst, ref);
-#endif
+    rtgc_InlineWriteBarrier(dst, ref);
 }
 FCIMPLEND
 
 FCIMPL3(void, RhpAssignRefArm64_rtgc_3, Object **dst, Object *ref, Object *old_ref)
 {
-    InlineWriteBarrier(dst, ref);
+    rtgc_InlineWriteBarrier<false>(dst, ref);
 }
 FCIMPLEND
 

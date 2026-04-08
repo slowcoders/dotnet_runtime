@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "future": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/Users/zeedhoon/slowcoders/dotnet/dotnet_runtime/src/coreclr"
 }

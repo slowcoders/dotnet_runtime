@@ -1,12 +1,13 @@
 #ifndef _RTGC_H_
 #define _RTGC_H_
 
+static const uint32_t OLD_ROOT_FLAG = 0x8000;
 class rtgc {
     struct RTGC_Header {
-        uint8_t    m_flags;
-        uint8_t    m_reserved;
         uint8_t    m_rc;
         uint8_t    m_stableRc;
+        uint8_t    m_reserved;
+        uint8_t    m_flags;
     };
 
 public:
@@ -19,6 +20,16 @@ public:
         return ref >= old_heap_start; // || (ref < g_ephemeral_low && ref != NULL);
     }
 
+    static FORCEINLINE void markOldRoot(void* ref) {
+        RTGC_Header* h = rtgcHeaderOf(ref);
+        *((int32_t*)h) |= OLD_ROOT_FLAG;
+    }
+
+    static FORCEINLINE bool isGarbage(void* ref) {
+        RTGC_Header* h = rtgcHeaderOf(ref);
+        return (*((int32_t*)h) & (OLD_ROOT_FLAG | 0xFFFF)) == 0;
+    }
+
     static FORCEINLINE void increase_rc(void* ref) {
         // ASSERT(rtgcHeaderOf(ref)->m_rc < 128);
         RTGC_Header* h = rtgcHeaderOf(ref);
@@ -26,6 +37,8 @@ public:
             h->m_rc ++;
         }
     }
+
+    static uint16_t g_root_mark_in_gc;
 
     static FORCEINLINE void decrease_rc(void* ref) {
         RTGC_Header* h = rtgcHeaderOf(ref);
@@ -38,6 +51,7 @@ public:
             } else {
                 rc_new += 0x100;
             }
+            rc_new |= g_root_mark_in_gc;
             std::atomic<uint16_t>* p = reinterpret_cast<std::atomic<uint16_t>*>(&h->m_rc);
             if (rc_old == p->compare_exchange_strong(rc_old, rc_new, std::memory_order_seq_cst)) {
                 break;

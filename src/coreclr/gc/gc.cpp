@@ -50057,6 +50057,10 @@ bool GCHeap::IsHeapPointer (void* vpObject, bool small_heap_only)
     return !!hs;
 }
 
+#ifdef FEATURE_RTGC
+uint16_t rtgc::g_root_mark_in_gc = 0;
+#endif
+
 void GCHeap::Promote(Object** ppObject, ScanContext* sc, uint32_t flags)
 {
     THREAD_NUMBER_FROM_CONTEXT;
@@ -50098,6 +50102,16 @@ void GCHeap::Promote(Object** ppObject, ScanContext* sc, uint32_t flags)
     if ((o < hp->gc_low) || (o >= hp->gc_high))
 #endif //USE_REGIONS
     {
+#ifdef FEATURE_RTGC
+        if (flags & GC_CALL_INTERIOR) {
+            if ((o = hp->find_object (o)) == 0) {
+                return;
+            }
+        }
+        if ((o >= hp->gc_high) && o < g_gc_highest_address) {
+            rtgc::markOldRoot(o);
+        }
+#endif        
         return;
     }
 

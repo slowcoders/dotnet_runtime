@@ -76,6 +76,8 @@ FCIMPLEND
 //
 #include "rtgc.h"
 
+uint16_t rtgc::g_root_mark_in_gc = 0;
+
 template < bool write_ref = true >  
 void rtgc_InlineWriteBarrier(Object ** dst, Object * ref, Object* old_ref = nullptr) {
 #ifdef FEATURE_RTGC    
